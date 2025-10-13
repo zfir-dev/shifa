@@ -1,0 +1,42 @@
+<odoo>
+  <record id="view_shifa_medical_tree" model="ir.ui.view">
+    <field name="name">shifa.medical_assistance.tree</field>
+    <field name="model">shifa.medical_assistance</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="member_id"/>
+        <field name="dependent_id"/>
+        <field name="claim_type"/>
+        <field name="claim_amount"/>
+        <field name="approved_amount"/>
+        <field name="state"/>
+        <field name="decision_date"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_shifa_medical_form" model="ir.ui.view">
+    <field name="name">shifa.medical_assistance.form</field>
+    <field name="model">shifa.medical_assistance</field>
+    <field name="arch" type="xml">
+      <form string="Medical Assistance">
+        <sheet>
+          <group>
+            <field name="member_id"/>
+            <field name="dependent_id" domain="[('member_id','=',member_id)]"/>
+            <field name="claim_type"/>
+            <field name="claim_amount"/>
+            <field name="approved_amount"/>
+            <field name="state"/>
+            <field name="decision_date"/>
+            <field name="remarks"/>
+          </group>
+          <footer>
+            <button name="action_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible':[('state','!=','draft')]}"/>
+            <button name="action_reject" string="Reject" type="object" class="btn-secondary" attrs="{'invisible':[('state','!=','draft')]}"/>
+          </footer>
+        </sheet>
+      </form>
+    </field>
+  </record>
+</odoo>

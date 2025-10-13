@@ -1,0 +1,25 @@
+<odoo>
+  <record id="email_dependent_promoted" model="mail.template">
+    <field name="name">SHIFA: Dependent Promoted</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="subject">Your SHIFA Membership Promotion</field>
+    <field name="email_from">${(object.env.company.email or 'noreply@example.com')}</field>
+    <field name="email_to">${object.email or ''}</field>
+    <field name="body_html"><![CDATA[
+      <p>Dear ${object.name},</p>
+      <p>You have been promoted to full SHIFA membership following changes to the main member's status.</p>
+      <p>Regards,<br/>SHIFA Committee</p>
+    ]]></field>
+  </record>
+
+  <record id="email_dependent_declined" model="mail.template">
+    <field name="name">SHIFA: Dependent Declined Promotion</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="subject">Dependent Declined Promotion</field>
+    <field name="email_from">${(object.env.company.email or 'noreply@example.com')}</field>
+    <field name="email_to">${','.join([user.partner_id.email for user in env.ref('base.group_system').users if user.partner_id.email])}</field>
+    <field name="body_html"><![CDATA[
+      <p>Info: A dependent linked to ${object.name} has declined automatic promotion.</p>
+    ]]></field>
+  </record>
+</odoo>

@@ -1,0 +1,34 @@
+<odoo>
+  <!-- Suspend members in arrears daily -->
+  <record id="ir_cron_suspend_arrears" model="ir.cron">
+    <field name="name">SHIFA: Suspend Members in Arrears</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="state">code</field>
+    <field name="code">model.cron_suspend_arrears()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="active">True</field>
+  </record>
+
+  <!-- Check dependents' ages monthly -->
+  <record id="ir_cron_check_dependent_ages" model="ir.cron">
+    <field name="name">SHIFA: Check Dependent Ages</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="state">code</field>
+    <field name="code">model.cron_check_dependent_ages()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">months</field>
+    <field name="active">True</field>
+  </record>
+
+  <!-- Create annual invoices yearly (Jan 1) -->
+  <record id="ir_cron_yearly_renewal" model="ir.cron">
+    <field name="name">SHIFA: Yearly Renewal Invoicing</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="state">code</field>
+    <field name="code">model.cron_yearly_renewal_invoicing()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">years</field>
+    <field name="active">True</field>
+  </record>
+</odoo>

@@ -1,0 +1,44 @@
+<odoo>
+  <record id="view_shifa_dependent_tree" model="ir.ui.view">
+    <field name="name">shifa.dependent.tree</field>
+    <field name="model">shifa.dependent</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="relation"/>
+        <field name="member_id"/>
+        <field name="age_group"/>
+        <field name="is_care_dependent"/>
+        <field name="is_orphan"/>
+        <field name="subscription_state"/>
+        <field name="approved"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_shifa_dependent_form" model="ir.ui.view">
+    <field name="name">shifa.dependent.form</field>
+    <field name="model">shifa.dependent</field>
+    <field name="arch" type="xml">
+      <form string="Dependent">
+        <sheet>
+          <group>
+            <field name="member_id"/>
+            <field name="name"/>
+            <field name="relation"/>
+            <field name="date_of_birth"/>
+            <field name="age_group" readonly="1"/>
+            <field name="id_number"/>
+          </group>
+          <group>
+            <field name="is_care_dependent"/>
+            <field name="is_orphan"/>
+            <field name="subscription_state"/>
+            <field name="auto_promote"/>
+            <field name="approved"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+</odoo>

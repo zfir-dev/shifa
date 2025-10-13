@@ -1,0 +1,99 @@
+<odoo>
+  <!-- Tree -->
+  <record id="view_shifa_member_tree" model="ir.ui.view">
+    <field name="name">shifa.member.tree</field>
+    <field name="model">shifa.member</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="status"/>
+        <field name="payment_state"/>
+        <field name="category"/>
+        <field name="dependent_count"/>
+        <field name="total_fee"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Form -->
+  <record id="view_shifa_member_form" model="ir.ui.view">
+    <field name="name">shifa.member.form</field>
+    <field name="model">shifa.member</field>
+    <field name="arch" type="xml">
+      <form string="Member">
+        <sheet>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="partner_id" readonly="1"/>
+              <field name="national_id"/>
+              <field name="date_of_birth"/>
+              <field name="email"/>
+              <field name="phone"/>
+              <field name="address"/>
+            </group>
+            <group>
+              <field name="status"/>
+              <field name="payment_state"/>
+              <field name="category"/>
+              <field name="orphan_secondary"/>
+              <field name="is_auto_promoted"/>
+              <field name="notification_sent"/>
+              <field name="linked_member_id"/>
+              <field name="admission_date"/>
+              <field name="membership_start_date"/>
+            </group>
+          </group>
+
+          <notebook>
+            <page string="Fees">
+              <group>
+                <field name="entry_fee"/>
+                <field name="annual_fee"/>
+                <field name="dependent_fee"/>
+                <field name="donation_amount"/>
+                <field name="payment_reference"/>
+                <field name="last_payment_type"/>
+                <field name="total_fee" readonly="1"/>
+              </group>
+              <group>
+                <button name="action_approve" string="Approve & Create Initial Invoice" type="object" class="btn-primary" attrs="{'invisible': [('status','!=','draft')]}"/>
+                <button name="create_annual_invoice" string="Create Annual Invoice" type="object" class="btn-secondary" attrs="{'invisible': [('status','!=','active')]}"/>
+                <button name="action_suspend" string="Suspend" type="object" attrs="{'invisible':[('status','!=','active')]}"/>
+                <button name="action_terminate" string="Mark Off (Terminate)" type="object" class="btn-danger" attrs="{'invisible':[('status','=','terminated')]}"/>
+                <button name="action_mark_deceased" string="Mark Deceased" type="object" class="btn-danger" attrs="{'invisible':[('status','=','deceased')]}"/>
+              </group>
+            </page>
+
+            <page string="Dependents">
+              <field name="dependent_ids">
+                <tree editable="bottom">
+                  <field name="name"/>
+                  <field name="relation"/>
+                  <field name="date_of_birth"/>
+                  <field name="age_group" readonly="1"/>
+                  <field name="is_care_dependent"/>
+                  <field name="is_orphan"/>
+                  <field name="subscription_state"/>
+                  <field name="auto_promote"/>
+                </tree>
+                <form>
+                  <group>
+                    <field name="name"/>
+                    <field name="relation"/>
+                    <field name="date_of_birth"/>
+                    <field name="is_care_dependent"/>
+                    <field name="is_orphan"/>
+                    <field name="subscription_state"/>
+                    <field name="auto_promote"/>
+                  </group>
+                </form>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+</odoo>

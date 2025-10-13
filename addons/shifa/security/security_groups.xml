@@ -1,0 +1,11 @@
+<odoo>
+  <record id="group_shifa_secretary" model="res.groups">
+    <field name="name">SHIFA Secretary</field>
+  </record>
+  <record id="group_shifa_treasurer" model="res.groups">
+    <field name="name">SHIFA Treasurer</field>
+  </record>
+  <record id="group_shifa_president" model="res.groups">
+    <field name="name">SHIFA President</field>
+  </record>
+</odoo>

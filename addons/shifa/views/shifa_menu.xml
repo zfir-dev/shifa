@@ -1,0 +1,25 @@
+<odoo>
+  <menuitem id="menu_shifa_root" name="SHIFA Association" sequence="10"/>
+  <menuitem id="menu_membership" name="Members" parent="menu_shifa_root" sequence="10" action="action_shifa_member_tree"/>
+  <menuitem id="menu_dependents" name="Dependents" parent="menu_shifa_root" sequence="20" action="action_shifa_dependent_tree"/>
+  <menuitem id="menu_medical" name="Medical Assistance" parent="menu_shifa_root" sequence="30" action="action_shifa_medical_tree"/>
+
+  <!-- Actions -->
+  <record id="action_shifa_member_tree" model="ir.actions.act_window">
+    <field name="name">Members</field>
+    <field name="res_model">shifa.member</field>
+    <field name="view_mode">tree,form,kanban</field>
+  </record>
+
+  <record id="action_shifa_dependent_tree" model="ir.actions.act_window">
+    <field name="name">Dependents</field>
+    <field name="res_model">shifa.dependent</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <record id="action_shifa_medical_tree" model="ir.actions.act_window">
+    <field name="name">Medical Assistance</field>
+    <field name="res_model">shifa.medical_assistance</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+</odoo>
