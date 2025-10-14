@@ -19,6 +19,7 @@
         'views/shifa_dependent_views.xml',
         'views/shifa_medical_views.xml',
         'views/shifa_membership_application_form.xml',
+        'views/account_payment_register_views.xml',
         'data/email_templates.xml',
         'data/cron_jobs.xml',
     ],
