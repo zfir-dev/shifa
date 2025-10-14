@@ -8,7 +8,6 @@
         'base',
         'contacts',
         'account',
-        'sale_subscription',
         'website'
     ],
     'data': [
@@ -18,7 +17,7 @@
         'views/shifa_member_views.xml',
         'views/shifa_dependent_views.xml',
         'views/shifa_medical_views.xml',
-        'views/shifa_membership_application_form.xml',
+        # 'views/shifa_membership_application_form.xml',  # Temporarily disabled - website template needs fixing
         'data/email_templates.xml',
         'data/cron_jobs.xml',
     ],

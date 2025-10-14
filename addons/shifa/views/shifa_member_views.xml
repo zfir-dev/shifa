@@ -57,11 +57,11 @@
                 <field name="total_fee" readonly="1"/>
               </group>
               <group>
-                <button name="action_approve" string="Approve & Create Initial Invoice" type="object" class="btn-primary" attrs="{'invisible': [('status','!=','draft')]}"/>
-                <button name="create_annual_invoice" string="Create Annual Invoice" type="object" class="btn-secondary" attrs="{'invisible': [('status','!=','active')]}"/>
-                <button name="action_suspend" string="Suspend" type="object" attrs="{'invisible':[('status','!=','active')]}"/>
-                <button name="action_terminate" string="Mark Off (Terminate)" type="object" class="btn-danger" attrs="{'invisible':[('status','=','terminated')]}"/>
-                <button name="action_mark_deceased" string="Mark Deceased" type="object" class="btn-danger" attrs="{'invisible':[('status','=','deceased')]}"/>
+                <button name="action_approve" string="Approve &amp; Create Initial Invoice" type="object" class="btn-primary" invisible="status != 'draft'"/>
+                <button name="create_annual_invoice" string="Create Annual Invoice" type="object" class="btn-secondary" invisible="status != 'active'"/>
+                <button name="action_suspend" string="Suspend" type="object" invisible="status != 'active'"/>
+                <button name="action_terminate" string="Mark Off (Terminate)" type="object" class="btn-danger" invisible="status == 'terminated'"/>
+                <button name="action_mark_deceased" string="Mark Deceased" type="object" class="btn-danger" invisible="status == 'deceased'"/>
               </group>
             </page>
 

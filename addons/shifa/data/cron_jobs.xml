@@ -21,14 +21,14 @@
     <field name="active">True</field>
   </record>
 
-  <!-- Create annual invoices yearly (Jan 1) -->
+  <!-- Create annual invoices yearly (every 12 months) -->
   <record id="ir_cron_yearly_renewal" model="ir.cron">
     <field name="name">SHIFA: Yearly Renewal Invoicing</field>
     <field name="model_id" ref="model_shifa_member"/>
     <field name="state">code</field>
     <field name="code">model.cron_yearly_renewal_invoicing()</field>
-    <field name="interval_number">1</field>
-    <field name="interval_type">years</field>
+    <field name="interval_number">12</field>
+    <field name="interval_type">months</field>
     <field name="active">True</field>
   </record>
 </odoo>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <!-- Public page -->
   <template id="membership_form_template" name="SHIFA Membership Form" page="True">
@@ -53,11 +54,11 @@
           <t t-foreach="[1,2,3]" t-as="i">
             <div class="border rounded p-3 mb-2">
               <h6>Dependent <t t-esc="i"/></h6>
-              <input type="text" name="dep_name_{{i}}" placeholder="Full Name" class="form-control mb-2"/>
-              <input type="date" name="dep_dob_{{i}}" class="form-control mb-2" placeholder="Date of Birth"/>
+              <input type="text" t-attf-name="dep_name_#{i}" placeholder="Full Name" class="form-control mb-2"/>
+              <input type="date" t-attf-name="dep_dob_#{i}" class="form-control mb-2" placeholder="Date of Birth"/>
               <div class="row">
                 <div class="col-md-6">
-                  <select name="dep_relation_{{i}}" class="form-select mb-1">
+                  <select t-attf-name="dep_relation_#{i}" class="form-select mb-1">
                     <option value="">Select Relationship</option>
                     <option value="spouse">Spouse</option>
                     <option value="child">Child</option>
@@ -67,13 +68,13 @@
                 </div>
                 <div class="col-md-6 d-flex gap-3">
                   <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="dep_care_{{i}}"/> Care Dependent
+                    <input class="form-check-input" type="checkbox" t-attf-name="dep_care_#{i}"/> Care Dependent
                   </label>
                   <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="dep_orphan_{{i}}"/> Orphan
+                    <input class="form-check-input" type="checkbox" t-attf-name="dep_orphan_#{i}"/> Orphan
                   </label>
                   <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="dep_auto_{{i}}"/> Auto-Promote on Member Off
+                    <input class="form-check-input" type="checkbox" t-attf-name="dep_auto_#{i}"/> Auto-Promote on Member Off
                   </label>
                 </div>
               </div>

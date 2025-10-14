@@ -32,8 +32,8 @@
             <field name="remarks"/>
           </group>
           <footer>
-            <button name="action_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible':[('state','!=','draft')]}"/>
-            <button name="action_reject" string="Reject" type="object" class="btn-secondary" attrs="{'invisible':[('state','!=','draft')]}"/>
+            <button name="action_approve" string="Approve" type="object" class="btn-primary" invisible="state != 'draft'"/>
+            <button name="action_reject" string="Reject" type="object" class="btn-secondary" invisible="state != 'draft'"/>
           </footer>
         </sheet>
       </form>

@@ -1,4 +1,11 @@
 odoo-data
 pgdata
 
+shifa*.zip
 /addons/shifa*.zip
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
