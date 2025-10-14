@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <!-- Juice Mobile Money Account -->
+    <record id="account_juice_mobile_money" model="account.account">
+      <field name="name">Juice</field>
+      <field name="code">102500</field>
+      <field name="account_type">asset_current</field>
+      <field name="reconcile" eval="True"/>
+    </record>
+
+    <!-- Juice Payment Journal -->
+    <record id="juice_payment_journal" model="account.journal">
+      <field name="name">Juice</field>
+      <field name="type">bank</field>
+      <field name="code">JUC1</field>
+      <field name="default_account_id" ref="account_juice_mobile_money"/>
+      <field name="sequence">10</field>
+      <field name="active" eval="True"/>
+    </record>
+
+  </data>
+</odoo>
+

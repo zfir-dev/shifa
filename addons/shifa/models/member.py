@@ -29,7 +29,7 @@ class ShifaMember(models.Model):
         ('pending', 'Pending'),
         ('paid', 'Paid'),
         ('arrears', 'In Arrears'),
-    ], default='pending', tracking=True)
+    ], compute='_compute_payment_state', store=True, tracking=True)
 
     # Article 18 categories / flags
     category = fields.Selection([
@@ -46,31 +46,65 @@ class ShifaMember(models.Model):
     dependent_ids = fields.One2many('shifa.dependent', 'member_id', string="Dependents")
 
     # Fees / totals
-    currency_id = fields.Many2one('res.currency', default=lambda s: s.env.company.currency_id, required=True)
+    currency_id = fields.Many2one(
+        'res.currency', 
+        default=lambda s: s.env.company.currency_id,
+        required=True,
+        string="Currency"
+    )
     total_fee = fields.Monetary(compute='_compute_total_fee', string="Total Initial Fee")
     entry_fee = fields.Monetary(default=500.0)
     annual_fee = fields.Monetary(default=1000.0)
     dependent_fee = fields.Monetary(default=500.0)
 
-    # Payment references (e.g., Juice TXN)
-    payment_reference = fields.Char(string="Payment Reference (e.g., Juice TXN)")
-    last_payment_type = fields.Selection([
-        ('entry_fee', 'Entry Fee'),
-        ('annual_fee', 'Annual Fee'),
-        ('dependent_fee', 'Dependent Fee'),
-        ('donation', 'Donation'),
-    ], string="Last Payment Type")
+    # Note: Payment references are handled by Odoo's standard payment registration
+    # When registering payment against invoices, you can add references there
 
     # Donation (optional)
     donation_amount = fields.Monetary(string="Donation Amount")
 
     # Convenience computed values
     dependent_count = fields.Integer(compute='_compute_dependent_count', store=False)
+    invoice_count = fields.Integer(compute='_compute_invoice_count', store=False)
 
     @api.depends('dependent_ids')
     def _compute_dependent_count(self):
         for rec in self:
             rec.dependent_count = len(rec.dependent_ids)
+
+    def _compute_invoice_count(self):
+        for rec in self:
+            if rec.partner_id:
+                rec.invoice_count = self.env['account.move'].search_count([
+                    ('partner_id', '=', rec.partner_id.id),
+                    ('move_type', '=', 'out_invoice')
+                ])
+            else:
+                rec.invoice_count = 0
+
+    @api.depends('partner_id', 'partner_id.invoice_ids.payment_state')
+    def _compute_payment_state(self):
+        """Compute payment state based on member's invoices"""
+        for rec in self:
+            if not rec.partner_id:
+                rec.payment_state = 'pending'
+                continue
+            
+            # Get all invoices for this member
+            invoices = self.env['account.move'].search([
+                ('partner_id', '=', rec.partner_id.id),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted')
+            ])
+            
+            if not invoices:
+                rec.payment_state = 'pending'
+            elif all(inv.payment_state == 'paid' for inv in invoices):
+                rec.payment_state = 'paid'
+            elif any(inv.payment_state == 'not_paid' and inv.invoice_date_due and inv.invoice_date_due < fields.Date.today() for inv in invoices):
+                rec.payment_state = 'arrears'
+            else:
+                rec.payment_state = 'pending'
 
     @api.depends('dependent_ids', 'entry_fee', 'annual_fee', 'dependent_fee')
     def _compute_total_fee(self):
@@ -91,6 +125,22 @@ class ShifaMember(models.Model):
             rec.partner_id = self.env['res.partner'].create(partner_vals)
 
     # --------- Actions ---------
+    def action_view_invoices(self):
+        """Open invoices for this member"""
+        self.ensure_one()
+        return {
+            'name': 'Invoices',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('partner_id', '=', self.partner_id.id), ('move_type', '=', 'out_invoice')],
+            'context': {'default_partner_id': self.partner_id.id, 'default_move_type': 'out_invoice'},
+        }
+
+    def action_refresh_payment_state(self):
+        """Manual action to refresh payment state"""
+        self._compute_payment_state()
+
     def action_approve(self):
         for rec in self:
             rec._get_or_create_partner()
@@ -137,10 +187,8 @@ class ShifaMember(models.Model):
                 'partner_id': rec.partner_id.id,
                 'invoice_date': fields.Date.today(),
                 'invoice_line_ids': line_vals,
-                'x_shifa_payment_reference': rec.payment_reference or False,
             })
             inv.action_post()
-            rec.last_payment_type = 'entry_fee'
 
     def create_annual_invoice(self):
         """Annual renewal (to be called yearly, e.g. via cron).
@@ -158,7 +206,6 @@ class ShifaMember(models.Model):
                 'invoice_line_ids': line_vals,
             })
             inv.action_post()
-            rec.last_payment_type = 'annual_fee'
 
     # --------- Promotions / Notifications ---------
     def _promote_first_dependent_if_applicable(self):

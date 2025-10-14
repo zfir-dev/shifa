@@ -21,7 +21,17 @@
     <field name="model">shifa.member</field>
     <field name="arch" type="xml">
       <form string="Member">
+        <header>
+          <button name="action_approve" string="Approve &amp; Create Initial Invoice" type="object" class="btn-primary" invisible="status != 'draft'"/>
+          <button name="create_annual_invoice" string="Create Annual Invoice" type="object" class="btn-secondary" invisible="status != 'active'"/>
+          <field name="status" widget="statusbar" statusbar_visible="draft,active"/>
+        </header>
         <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
+              <field name="invoice_count" widget="statinfo" string="Invoices"/>
+            </button>
+          </div>
           <group>
             <group>
               <field name="name"/>
@@ -46,23 +56,32 @@
           </group>
 
           <notebook>
-            <page string="Fees">
+            <page string="Fees &amp; Payments">
               <group>
-                <field name="entry_fee"/>
-                <field name="annual_fee"/>
-                <field name="dependent_fee"/>
-                <field name="donation_amount"/>
-                <field name="payment_reference"/>
-                <field name="last_payment_type"/>
-                <field name="total_fee" readonly="1"/>
+                <group string="Fee Structure">
+                  <field name="entry_fee"/>
+                  <field name="annual_fee"/>
+                  <field name="dependent_fee"/>
+                  <field name="donation_amount"/>
+                  <field name="total_fee" readonly="1"/>
+                </group>
+                <group string="Member Status Actions">
+                  <div class="o_row">
+                    <button name="action_suspend" string="Suspend Member" type="object" class="btn btn-warning" style="width: 100%; margin-bottom: 8px;" invisible="status != 'active'"/>
+                    <button name="action_terminate" string="Mark Off (Terminate)" type="object" class="btn btn-danger" style="width: 100%; margin-bottom: 8px;" invisible="status == 'terminated'"/>
+                    <button name="action_mark_deceased" string="Mark Deceased" type="object" class="btn btn-danger" style="width: 100%;" invisible="status == 'deceased'"/>
+                  </div>
+                </group>
               </group>
-              <group>
-                <button name="action_approve" string="Approve &amp; Create Initial Invoice" type="object" class="btn-primary" invisible="status != 'draft'"/>
-                <button name="create_annual_invoice" string="Create Annual Invoice" type="object" class="btn-secondary" invisible="status != 'active'"/>
-                <button name="action_suspend" string="Suspend" type="object" invisible="status != 'active'"/>
-                <button name="action_terminate" string="Mark Off (Terminate)" type="object" class="btn-danger" invisible="status == 'terminated'"/>
-                <button name="action_mark_deceased" string="Mark Deceased" type="object" class="btn-danger" invisible="status == 'deceased'"/>
-              </group>
+              <separator string="Payment Processing Instructions"/>
+              <div class="oe_grey">
+                <p><strong>How to Record Payments:</strong></p>
+                <p>• Click the <strong>"Invoices"</strong> smart button at the top</p>
+                <p>• Open the invoice and click <strong>"Register Payment"</strong></p>
+                <p>• Select journal: <strong>Bank</strong>, <strong>Cash</strong>, or <strong>Juice</strong></p>
+                <p>• Enter payment reference (e.g., Juice #123456)</p>
+                <p>• Payment State updates automatically</p>
+              </div>
             </page>
 
             <page string="Dependents">

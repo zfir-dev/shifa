@@ -17,10 +17,9 @@ class ShifaMembershipController(http.Controller):
             'address': post.get('address'),
             'phone': post.get('phone'),
             'email': post.get('email'),
-
             'category': 'member',
-            'payment_reference': post.get('payment_reference'),
             'donation_amount': float(post.get('donation_amount') or 0.0),
+            'status': 'draft',  # Pending approval
         })
 
         # Dependents (3 slots; extend as needed)

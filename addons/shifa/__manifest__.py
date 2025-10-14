@@ -11,13 +11,15 @@
         'website'
     ],
     'data': [
+        'data/currency_config.xml',
         'security/security_groups.xml',
         'security/ir.model.access.csv',
+        'data/payment_journals.xml',
         'views/shifa_menu.xml',
         'views/shifa_member_views.xml',
         'views/shifa_dependent_views.xml',
         'views/shifa_medical_views.xml',
-        # 'views/shifa_membership_application_form.xml',  # Temporarily disabled - website template needs fixing
+        'views/shifa_membership_application_form.xml',
         'data/email_templates.xml',
         'data/cron_jobs.xml',
     ],

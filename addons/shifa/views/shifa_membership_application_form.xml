@@ -1,101 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Public page -->
-  <template id="membership_form_template" name="SHIFA Membership Form" page="True">
-    <t t-call="website.layout">
-      <div class="container mt-5 mb-5">
-        <h2 class="text-center mb-4">SHIFA Membership Application</h2>
-        <form action="/shifa/membership/submit" method="post" class="form">
-          <h4>Member Details</h4>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label>Full Name</label>
-              <input type="text" name="name" required="required" class="form-control"/>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label>National ID</label>
-              <input type="text" name="national_id" class="form-control"/>
-            </div>
-          </div>
+  <data>
+    <!-- Public page -->
+    <record id="membership_form_template" model="ir.ui.view">
+      <field name="name">SHIFA Membership Form</field>
+      <field name="type">qweb</field>
+      <field name="key">shifa.membership_form_template</field>
+      <field name="arch" type="xml">
+        <t t-name="shifa.membership_form_template">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <div class="container mt-5 mb-5">
+                <h2 class="text-center mb-4">SHIFA Membership Application</h2>
+                <form action="/shifa/membership/submit" method="post" class="form">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                  
+                  <h4>Member Details</h4>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label>Full Name</label>
+                      <input type="text" name="name" required="required" class="form-control"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label>National ID</label>
+                      <input type="text" name="national_id" class="form-control"/>
+                    </div>
+                  </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label>Date of Birth</label>
-              <input type="date" name="dob" class="form-control"/>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label>Email</label>
-              <input type="email" name="email" class="form-control"/>
-            </div>
-          </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label>Date of Birth</label>
+                      <input type="date" name="dob" class="form-control"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label>Email</label>
+                      <input type="email" name="email" class="form-control"/>
+                    </div>
+                  </div>
 
-          <div class="mb-3">
-            <label>Address</label>
-            <textarea name="address" class="form-control"></textarea>
-          </div>
-          <div class="mb-3">
-            <label>Phone</label>
-            <input type="text" name="phone" class="form-control"/>
-          </div>
+                  <div class="mb-3">
+                    <label>Address</label>
+                    <textarea name="address" class="form-control"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-control"/>
+                  </div>
 
-          <h4 class="mt-4">Payment</h4>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label>Payment Reference (e.g., Juice TXN)</label>
-              <input type="text" name="payment_reference" class="form-control" placeholder="Juice #123456"/>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label>Optional Donation</label>
-              <input type="number" name="donation_amount" class="form-control" step="0.01" min="0"/>
-            </div>
-          </div>
+                  <h4 class="mt-4">Optional Donation</h4>
+                  <div class="mb-3">
+                    <label>Donation Amount (Optional)</label>
+                    <input type="number" name="donation_amount" class="form-control" step="0.01" min="0" placeholder="0.00"/>
+                    <small class="form-text text-muted">You will receive an invoice after approval. Payment can be made via Bank or Juice.</small>
+                  </div>
 
-          <h4 class="mt-4">Dependents (optional)</h4>
-          <t t-foreach="[1,2,3]" t-as="i">
-            <div class="border rounded p-3 mb-2">
-              <h6>Dependent <t t-esc="i"/></h6>
-              <input type="text" t-attf-name="dep_name_#{i}" placeholder="Full Name" class="form-control mb-2"/>
-              <input type="date" t-attf-name="dep_dob_#{i}" class="form-control mb-2" placeholder="Date of Birth"/>
-              <div class="row">
-                <div class="col-md-6">
-                  <select t-attf-name="dep_relation_#{i}" class="form-select mb-1">
-                    <option value="">Select Relationship</option>
-                    <option value="spouse">Spouse</option>
-                    <option value="child">Child</option>
-                    <option value="relative">Care-dependent Relative</option>
-                    <option value="disabled">Disabled Dependent</option>
-                  </select>
-                </div>
-                <div class="col-md-6 d-flex gap-3">
-                  <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" t-attf-name="dep_care_#{i}"/> Care Dependent
-                  </label>
-                  <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" t-attf-name="dep_orphan_#{i}"/> Orphan
-                  </label>
-                  <label class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" t-attf-name="dep_auto_#{i}"/> Auto-Promote on Member Off
-                  </label>
-                </div>
+                  <h4 class="mt-4">Dependents (optional)</h4>
+                  <t t-foreach="[1,2,3]" t-as="i">
+                    <div class="border rounded p-3 mb-2">
+                      <h6>Dependent <t t-esc="i"/></h6>
+                      <input type="text" t-attf-name="dep_name_#{i}" placeholder="Full Name" class="form-control mb-2"/>
+                      <input type="date" t-attf-name="dep_dob_#{i}" class="form-control mb-2" placeholder="Date of Birth"/>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <select t-attf-name="dep_relation_#{i}" class="form-select mb-1">
+                            <option value="">Select Relationship</option>
+                            <option value="spouse">Spouse</option>
+                            <option value="child">Child</option>
+                            <option value="relative">Care-dependent Relative</option>
+                            <option value="disabled">Disabled Dependent</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 d-flex gap-3">
+                          <label class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" t-attf-name="dep_care_#{i}"/> Care Dependent
+                          </label>
+                          <label class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" t-attf-name="dep_orphan_#{i}"/> Orphan
+                          </label>
+                          <label class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" t-attf-name="dep_auto_#{i}"/> Auto-Promote on Member Off
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </t>
+
+                  <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                  </div>
+                </form>
               </div>
             </div>
           </t>
+        </t>
+      </field>
+    </record>
 
-          <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Submit Application</button>
-          </div>
-        </form>
-      </div>
-    </t>
-  </template>
+    <record id="membership_success" model="ir.ui.view">
+      <field name="name">Membership Success</field>
+      <field name="type">qweb</field>
+      <field name="key">shifa.membership_success</field>
+      <field name="arch" type="xml">
+        <t t-name="shifa.membership_success">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <div class="container text-center mt-5 mb-5">
+                <h3>✅ Application Submitted Successfully!</h3>
+                <p class="lead">Thank you for applying to SHIFA!</p>
+                <div class="alert alert-success mt-4">
+                  <h5>Next Steps:</h5>
+                  <p>• Your application will be reviewed by the Managing Committee</p>
+                  <p>• Once approved, you will receive an invoice via email</p>
+                  <p><strong>Payment Methods:</strong></p>
+                  <p style="margin-left: 20px;">• <strong>Bank Transfer</strong> to our bank account</p>
+                  <p style="margin-left: 20px;">• <strong>Juice Payment</strong> (mobile money)</p>
+                  <p style="margin-left: 20px;">• <strong>Cash</strong> at our office</p>
+                  <p>• Your membership will be activated after payment confirmation</p>
+                </div>
+                <a href="/" class="btn btn-secondary mt-3">Return Home</a>
+              </div>
+            </div>
+          </t>
+        </t>
+      </field>
+    </record>
 
-  <template id="membership_success" name="Membership Success">
-    <t t-call="website.layout">
-      <div class="container text-center mt-5 mb-5">
-        <h3>✅ Application Submitted Successfully!</h3>
-        <p>Thank you. Your application is pending review by the Managing Committee.</p>
-        <a href="/" class="btn btn-secondary mt-3">Return Home</a>
-      </div>
-    </t>
-  </template>
+    <!-- Website Menu -->
+    <record id="menu_membership_form" model="website.menu">
+      <field name="name">Join SHIFA</field>
+      <field name="url">/shifa/membership</field>
+      <field name="parent_id" ref="website.main_menu"/>
+      <field name="sequence" type="int">50</field>
+    </record>
+  </data>
 </odoo>
