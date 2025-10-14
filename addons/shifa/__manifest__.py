@@ -11,7 +11,6 @@
         'website'
     ],
     'data': [
-        'data/currency_config.xml',
         'security/security_groups.xml',
         'security/ir.model.access.csv',
         'data/payment_journals.xml',
