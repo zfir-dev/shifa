@@ -55,35 +55,60 @@
                   </div>
 
                   <h4 class="mt-4">Dependents (optional)</h4>
-                  <t t-foreach="[1,2,3]" t-as="i">
-                    <div class="border rounded p-3 mb-2">
-                      <h6>Dependent <t t-esc="i"/></h6>
-                      <input type="text" t-attf-name="dep_name_#{i}" placeholder="Full Name" class="form-control mb-2"/>
-                      <input type="date" t-attf-name="dep_dob_#{i}" class="form-control mb-2" placeholder="Date of Birth"/>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <select t-attf-name="dep_relation_#{i}" class="form-select mb-1">
-                            <option value="">Select Relationship</option>
-                            <option value="spouse">Spouse</option>
-                            <option value="child">Child</option>
-                            <option value="relative">Care-dependent Relative</option>
-                            <option value="disabled">Disabled Dependent</option>
-                          </select>
+                  <div id="dependents-container"></div>
+                  <button type="button" class="btn btn-outline-primary mt-2" id="add-dependent-btn">
+                    <i class="fa fa-plus"></i> Add Dependent
+                  </button>
+
+                  <script>
+                    let dependentCount = 0;
+
+                    function removeDependentScript(index) {
+                      document.getElementById('dependent-' + index).remove();
+                    }
+
+                    function addDependentScript() {
+                      dependentCount++;
+                      const container = document.getElementById('dependents-container');
+                      const dependentHtml = `
+                        <div class="border rounded p-3 mb-2" id="dependent-${dependentCount}">
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Dependent ${dependentCount}</h6>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeDependentScript(${dependentCount})">
+                              <i class="fa fa-times"></i> Remove
+                            </button>
+                          </div>
+                          <input type="text" name="dep_name_${dependentCount}" placeholder="Full Name" class="form-control mb-2"/>
+                          <input type="date" name="dep_dob_${dependentCount}" class="form-control mb-2" placeholder="Date of Birth"/>
+                          <div class="row">
+                            <div class="col-md-6">
+                              <select name="dep_relation_${dependentCount}" class="form-select mb-1">
+                                <option value="">Select Relationship</option>
+                                <option value="spouse">Spouse</option>
+                                <option value="child">Child</option>
+                                <option value="relative">Care-dependent Relative</option>
+                                <option value="disabled">Disabled Dependent</option>
+                              </select>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dep_care_${dependentCount}"/> Care Dependent
+                              </label>
+                              <label class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dep_orphan_${dependentCount}"/> Orphan
+                              </label>
+                              <label class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dep_auto_${dependentCount}"/> Auto-Promote
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                        <div class="col-md-6 d-flex gap-3">
-                          <label class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" t-attf-name="dep_care_#{i}"/> Care Dependent
-                          </label>
-                          <label class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" t-attf-name="dep_orphan_#{i}"/> Orphan
-                          </label>
-                          <label class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" t-attf-name="dep_auto_#{i}"/> Auto-Promote on Member Off
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </t>
+                      `;
+                      container.insertAdjacentHTML('beforeend', dependentHtml);
+                    }
+
+                    document.getElementById('add-dependent-btn').addEventListener('click', addDependentScript);
+                  </script>
 
                   <div class="mt-4">
                     <button type="submit" class="btn btn-primary">Submit Application</button>
@@ -105,7 +130,7 @@
           <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
               <div class="container text-center mt-5 mb-5">
-                <h3>✅ Application Submitted Successfully!</h3>
+                <h3>Application Submitted Successfully!</h3>
                 <p class="lead">Thank you for applying to SHIFA!</p>
                 <div class="alert alert-success mt-4">
                   <h5>Next Steps:</h5>

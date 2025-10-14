@@ -22,13 +22,19 @@ class ShifaMembershipController(http.Controller):
             'status': 'draft',  # Pending approval
         })
 
-        # Dependents (3 slots; extend as needed)
-        for i in range(1, 4):
-            dep_name = post.get(f'dep_name_{i}')
-            if not dep_name:
-                continue
+        # Dependents (dynamic - handle any number)
+        # Find all dependent names from post data
+        dependent_indices = []
+        for key in post.keys():
+            if key.startswith('dep_name_'):
+                idx = key.replace('dep_name_', '')
+                if post.get(key):  # Only if name is provided
+                    dependent_indices.append(idx)
+        
+        # Create each dependent
+        for i in dependent_indices:
             request.env['shifa.dependent'].sudo().create({
-                'name': dep_name,
+                'name': post.get(f'dep_name_{i}'),
                 'relation': post.get(f'dep_relation_{i}') or 'child',
                 'date_of_birth': post.get(f'dep_dob_{i}') or False,
                 'is_care_dependent': True if post.get(f'dep_care_{i}') == 'on' else False,
