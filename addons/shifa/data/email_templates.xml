@@ -22,4 +22,47 @@
       <p>Info: A dependent linked to ${object.name} has declined automatic promotion.</p>
     ]]></field>
   </record>
+
+  <record id="email_arrears_notification" model="mail.template">
+    <field name="name">SHIFA: Members in Arrears Notification</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="subject">Member in Arrears: ${object.name}</field>
+    <field name="email_from">${(object.env.company.email or 'noreply@example.com')}</field>
+    <!-- Send to Treasurer and Secretary group users -->
+    <field name="email_to">${','.join([u.partner_id.email for g in [env.ref('shifa.group_shifa_treasurer'), env.ref('shifa.group_shifa_secretary')] for u in g.users if u.partner_id and u.partner_id.email])}</field>
+    <field name="body_html"><![CDATA[
+      <p>Dear Committee,</p>
+      <p>The following member has invoices in arrears beyond 90 days:</p>
+      <p><strong>${object.name}</strong> (Email: ${object.email or 'N/A'}, Phone: ${object.phone or 'N/A'})</p>
+      <p>Please review their account and take necessary action.</p>
+      <p>Regards,<br/>SHIFA Automated Notices</p>
+    ]]></field>
+  </record>
+
+  <record id="email_renewal_reminder" model="mail.template">
+    <field name="name">SHIFA: Renewal Reminder</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="subject">Renewal Reminder: Please settle your SHIFA subscription</field>
+    <field name="email_from">${(object.env.company.email or 'noreply@example.com')}</field>
+    <field name="email_to">${object.email or ''}</field>
+    <field name="body_html"><![CDATA[
+      <p>Dear ${object.name},</p>
+      <p>This is a reminder that your SHIFA subscription invoice(s) are unpaid. Please settle your dues by 31 March to avoid suspension.</p>
+      <p>View your invoices via your account or contact the Treasurer.</p>
+      <p>Regards,<br/>SHIFA Committee</p>
+    ]]></field>
+  </record>
+
+  <record id="email_renewal_summary" model="mail.template">
+    <field name="name">SHIFA: Renewal Summary for Treasurer</field>
+    <field name="model_id" ref="model_shifa_member"/>
+    <field name="subject">SHIFA Renewal Summary - Pending Dues</field>
+    <field name="email_from">${(object.env.company.email or 'noreply@example.com')}</field>
+    <field name="email_to">${','.join([u.partner_id.email for u in env.ref('shifa.group_shifa_treasurer').users if u.partner_id and u.partner_id.email])}</field>
+    <field name="body_html"><![CDATA[
+      <p>Dear Treasurer,</p>
+      <p>Please find the list of members with pending dues. If you need a detailed report please visit the accounting area.</p>
+      <p>Regards,<br/>SHIFA Automated Notices</p>
+    ]]></field>
+  </record>
 </odoo>

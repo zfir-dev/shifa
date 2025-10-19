@@ -15,6 +15,50 @@
     </field>
   </record>
 
+  <!-- Kanban -->
+  <record id="view_shifa_member_kanban" model="ir.ui.view">
+    <field name="name">shifa.member.kanban</field>
+    <field name="model">shifa.member</field>
+    <field name="arch" type="xml">
+      <kanban>
+        <field name="status"/>
+        <templates>
+          <t t-name="kanban-box">
+            <div class="oe_kanban_global_click">
+              <div><strong t-esc="record.name.value"/></div>
+              <div><small>Status: <t t-esc="record.status.value"/></small></div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <!-- Graph -->
+  <record id="view_shifa_member_graph" model="ir.ui.view">
+    <field name="name">shifa.member.graph</field>
+    <field name="model">shifa.member</field>
+    <field name="arch" type="xml">
+      <graph string="Members by Status">
+        <field name="status" type="row"/>
+        <field name="id" type="measure"/>
+      </graph>
+    </field>
+  </record>
+
+  <!-- Pivot for subscription revenue -->
+  <record id="view_shifa_member_pivot" model="ir.ui.view">
+    <field name="name">shifa.member.pivot</field>
+    <field name="model">shifa.member</field>
+    <field name="arch" type="xml">
+      <pivot>
+        <field name="status" type="row"/>
+        <field name="entry_fee" type="measure"/>
+        <field name="annual_fee" type="measure"/>
+      </pivot>
+    </field>
+  </record>
+
   <!-- Form -->
   <record id="view_shifa_member_form" model="ir.ui.view">
     <field name="name">shifa.member.form</field>

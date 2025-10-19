@@ -15,3 +15,12 @@ class AccountPaymentRegister(models.TransientModel):
             payments.write({'payment_reference_notes': self.payment_reference_notes})
         return payments
 
+
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    payment_reference_notes = fields.Text(
+        string="Payment Reference Notes",
+        help="Copied from the payment register to keep external payment references (Juice, bank ref, etc.)"
+    )
+

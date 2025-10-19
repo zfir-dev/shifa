@@ -99,12 +99,24 @@ class ShifaMember(models.Model):
             
             if not invoices:
                 rec.payment_state = 'pending'
-            elif all(inv.payment_state == 'paid' for inv in invoices):
-                rec.payment_state = 'paid'
-            elif any(inv.payment_state == 'not_paid' and inv.invoice_date_due and inv.invoice_date_due < fields.Date.today() for inv in invoices):
-                rec.payment_state = 'arrears'
             else:
-                rec.payment_state = 'pending'
+                # If all posted invoices are paid -> paid
+                if all(inv.payment_state == 'paid' for inv in invoices):
+                    rec.payment_state = 'paid'
+                    continue
+
+                # If there exists an invoice past due -> arrears
+                past_due = False
+                for inv in invoices:
+                    # Use invoice_date_due when set, otherwise invoice_date
+                    due = inv.invoice_date_due or inv.invoice_date
+                    if due and due < fields.Date.today() and inv.payment_state != 'paid':
+                        past_due = True
+                        break
+                if past_due:
+                    rec.payment_state = 'arrears'
+                else:
+                    rec.payment_state = 'pending'
 
     @api.depends('dependent_ids', 'entry_fee', 'annual_fee', 'dependent_fee')
     def _compute_total_fee(self):
@@ -148,6 +160,32 @@ class ShifaMember(models.Model):
             rec.membership_start_date = fields.Date.today()
             rec._create_initial_invoice()
 
+    def _notify_committee_arrears(self, members):
+        """Send notification to Treasurer and Secretary about members in arrears.
+        Expects a recordset of shifa.member."""
+        if not members:
+            return
+        try:
+            tmpl = self.env.ref('shifa.email_arrears_notification', raise_if_not_found=False)
+            if not tmpl:
+                return
+            # send using the members model (template expects a member)
+            for m in members:
+                tmpl.sudo().send_mail(m.id, force_send=False)
+        except Exception:
+            # avoid cron failure if email template missing or error
+            _logger = self.env['ir.logging']
+            _logger.sudo().create({
+                'name': 'shifa.arrears.notify',
+                'type': 'server',
+                'dbname': self.env.cr.dbname,
+                'level': 'ERROR',
+                'message': 'Failed to send arrears notification',
+                'path': 'shifa.models.member',
+                'line': '0',
+                'func': '_notify_committee_arrears',
+            })
+
     def action_suspend(self):
         self.write({'status': 'suspended'})
 
@@ -182,10 +220,14 @@ class ShifaMember(models.Model):
             if rec.donation_amount:
                 line_vals.append((0, 0, {'name': 'Donation', 'quantity': 1, 'price_unit': rec.donation_amount}))
 
+            # Set due date for annual subscription to March 31 of current year (to align with arrears policy)
+            today = fields.Date.today()
+            due_date = fields.Date.to_string(fields.Date.from_string(f"{today.year}-03-31"))
             inv = self.env['account.move'].create({
                 'move_type': 'out_invoice',
                 'partner_id': rec.partner_id.id,
                 'invoice_date': fields.Date.today(),
+                'invoice_date_due': due_date,
                 'invoice_line_ids': line_vals,
             })
             inv.action_post()
@@ -199,10 +241,13 @@ class ShifaMember(models.Model):
             for d in rec.dependent_ids:
                 price = 0.0 if d.subscription_state == 'unsubscribed' else (0.0 if d.is_orphan else rec.dependent_fee)
                 line_vals.append((0, 0, {'name': f'Dependent Fee: {d.name}', 'quantity': 1, 'price_unit': price}))
+            today = fields.Date.today()
+            due_date = fields.Date.to_string(fields.Date.from_string(f"{today.year}-03-31"))
             inv = self.env['account.move'].create({
                 'move_type': 'out_invoice',
                 'partner_id': rec.partner_id.id,
                 'invoice_date': fields.Date.today(),
+                'invoice_date_due': due_date,
                 'invoice_line_ids': line_vals,
             })
             inv.action_post()
@@ -254,12 +299,39 @@ class ShifaMember(models.Model):
     @api.model
     def cron_suspend_arrears(self):
         """Suspend members with payment_state = arrears."""
-        self.search([('payment_state', '=', 'arrears'), ('status', '=', 'active')]).write({'status': 'suspended'})
+        # Find members with invoices overdue by more than 90 days
+        today = fields.Date.today()
+        members_to_suspend = self.browse()
+        for m in self.search([('status', '=', 'active')]):
+            if not m.partner_id:
+                continue
+            invoices = self.env['account.move'].search([
+                ('partner_id', '=', m.partner_id.id),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted'),
+                ('payment_state', '!=', 'paid'),
+            ])
+            overdue = False
+            for inv in invoices:
+                due = inv.invoice_date_due or inv.invoice_date
+                if due and (today - due).days > 90:
+                    overdue = True
+                    break
+            if overdue:
+                members_to_suspend |= m
+
+        if members_to_suspend:
+            members_to_suspend.write({'status': 'suspended'})
+            # notify Treasurer and Secretary
+            self._notify_committee_arrears(members_to_suspend)
 
     @api.model
     def cron_yearly_renewal_invoicing(self):
         """Generate yearly invoices (run each January 1)."""
-        self.search([('status', '=', 'active')]).create_annual_invoice()
+        today = fields.Date.today()
+        # Only run on January 1 to match requirement
+        if today.month == 1 and today.day == 1:
+            self.search([('status', '=', 'active')]).create_annual_invoice()
 
     @api.model
     def cron_check_dependent_ages(self):
@@ -274,3 +346,67 @@ class ShifaMember(models.Model):
             if age >= 23 and not d.is_care_dependent:
                 d.subscription_state = 'unsubscribed'
             # NOTE: we keep them as dependents even after 18 per your rule.
+
+    @api.model
+    def cron_send_renewal_reminders(self):
+        """Send renewal reminders to members between Jan 1 and Mar 31 for unpaid invoices."""
+        today = fields.Date.today()
+        if not (today.month >= 1 and today.month <= 3):
+            return
+        # find active members with unpaid posted invoices
+        members = self.search([('status', '=', 'active')])
+        tmpl = self.env.ref('shifa.email_renewal_reminder', raise_if_not_found=False)
+        notified = self.browse()
+        for m in members:
+            if not m.partner_id:
+                continue
+            invoices = self.env['account.move'].search([
+                ('partner_id', '=', m.partner_id.id),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted'),
+                ('payment_state', '!=', 'paid'),
+            ])
+            if invoices:
+                # send reminder
+                if tmpl:
+                    try:
+                        tmpl.sudo().send_mail(m.id, force_send=False)
+                    except Exception:
+                        pass
+                notified |= m
+
+        # Optionally send a summary to Treasurer
+        if notified:
+            summ_tmpl = self.env.ref('shifa.email_renewal_summary', raise_if_not_found=False)
+            if summ_tmpl:
+                try:
+                    # use first member as context; template should produce a list via server-side
+                    summ_tmpl.sudo().send_mail(notified[0].id, force_send=False)
+                except Exception:
+                    pass
+
+    @api.model
+    def cron_post_march_suspension(self):
+        """On and after Apr 1, suspend active members with unpaid invoices due by Mar 31."""
+        today = fields.Date.today()
+        # only run on or after Apr 1
+        if today.month < 4:
+            return
+        cutoff = fields.Date.to_string(fields.Date.from_string(f"{today.year}-03-31"))
+        members_to_suspend = self.browse()
+        for m in self.search([('status', '=', 'active')]):
+            if not m.partner_id:
+                continue
+            invoices = self.env['account.move'].search([
+                ('partner_id', '=', m.partner_id.id),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted'),
+                ('payment_state', '!=', 'paid'),
+                ('invoice_date_due', '<=', cutoff),
+            ])
+            if invoices:
+                members_to_suspend |= m
+
+        if members_to_suspend:
+            members_to_suspend.write({'status': 'suspended'})
+            self._notify_committee_arrears(members_to_suspend)

@@ -10,8 +10,8 @@
         <field name="age_group"/>
         <field name="is_care_dependent"/>
         <field name="is_orphan"/>
-        <field name="subscription_state"/>
-        <field name="approved"/>
+  <field name="subscription_state"/>
+  <field name="approval_state"/>
       </tree>
     </field>
   </record>
@@ -35,7 +35,7 @@
             <field name="is_orphan"/>
             <field name="subscription_state"/>
             <field name="auto_promote"/>
-            <field name="approved"/>
+            <field name="approval_state"/>
           </group>
         </sheet>
       </form>

@@ -1,11 +1,19 @@
 <odoo>
   <record id="group_shifa_secretary" model="res.groups">
     <field name="name">SHIFA Secretary</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
   </record>
   <record id="group_shifa_treasurer" model="res.groups">
     <field name="name">SHIFA Treasurer</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
   </record>
   <record id="group_shifa_president" model="res.groups">
     <field name="name">SHIFA President</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+  </record>
+  <!-- Admin / Committee group combining president, secretary and treasurer -->
+  <record id="group_shifa_committee" model="res.groups">
+    <field name="name">SHIFA Committee</field>
+    <field name="implied_ids" eval="[(4, ref('group_shifa_secretary')), (4, ref('group_shifa_treasurer')), (4, ref('group_shifa_president'))]"/>
   </record>
 </odoo>
