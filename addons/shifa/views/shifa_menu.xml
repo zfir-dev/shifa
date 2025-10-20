@@ -14,7 +14,7 @@
 
   <record id="action_shifa_medical_tree" model="ir.actions.act_window">
     <field name="name">Medical Assistance</field>
-    <field name="res_model">shifa.medical_assistance</field>
+    <field name="res_model">shifa.medical.assistance</field>
     <field name="view_mode">tree,form</field>
   </record>
 
