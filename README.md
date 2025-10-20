@@ -11,7 +11,7 @@ Usage (development):
 docker-compose up
 ```
 
-Usage (production / Coolify):
+Usage (production):
 
 Build the image (Dockerfile copies `./addons` into the image) and run without the local bind mount:
 
