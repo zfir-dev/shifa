@@ -2,7 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 class ShifaMedicalAssistance(models.Model):
-    _name = 'shifa.medical_assistance'
+    _name = 'shifa.medical.assistance'
     _description = 'SHIFA Medical Assistance'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
