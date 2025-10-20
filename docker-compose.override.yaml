@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  odoo:
+    volumes:
+      - ./addons:/mnt/extra-addons:delegated
+    environment:
+      - DEV=1
