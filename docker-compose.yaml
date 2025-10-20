@@ -12,7 +12,7 @@ services:
       - PASSWORD=odoo
     volumes:
       - ./addons:/mnt/extra-addons
-      - ./odoo-data:/var/lib/odoo
+      - odoo-data:/var/lib/odoo
 
   db:
     image: postgres:17
@@ -22,3 +22,7 @@ services:
       - POSTGRES_PASSWORD=odoo
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+
+volumes:
+  odoo-data:
+    driver: local
