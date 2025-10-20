@@ -4,14 +4,14 @@
     <field name="name">shifa.member.tree</field>
     <field name="model">shifa.member</field>
     <field name="arch" type="xml">
-      <tree>
+      <list>
         <field name="name"/>
         <field name="status"/>
         <field name="payment_state"/>
         <field name="category"/>
         <field name="dependent_count"/>
         <field name="total_fee"/>
-      </tree>
+      </list>
     </field>
   </record>
 
@@ -130,7 +130,7 @@
 
             <page string="Dependents">
               <field name="dependent_ids">
-                <tree editable="bottom">
+                  <list editable="bottom">
                   <field name="name"/>
                   <field name="relation"/>
                   <field name="date_of_birth"/>
@@ -139,7 +139,7 @@
                   <field name="is_orphan"/>
                   <field name="subscription_state"/>
                   <field name="auto_promote"/>
-                </tree>
+                  </list>
                 <form>
                   <group>
                     <field name="name"/>

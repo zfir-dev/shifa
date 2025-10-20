@@ -3,7 +3,7 @@
     <field name="name">shifa.dependent.tree</field>
     <field name="model">shifa.dependent</field>
     <field name="arch" type="xml">
-      <tree>
+      <list>
         <field name="name"/>
         <field name="relation"/>
         <field name="member_id"/>
@@ -12,7 +12,7 @@
         <field name="is_orphan"/>
   <field name="subscription_state"/>
   <field name="approval_state"/>
-      </tree>
+      </list>
     </field>
   </record>
 

@@ -1,9 +1,9 @@
 <odoo>
   <record id="view_shifa_medical_tree" model="ir.ui.view">
-    <field name="name">shifa.medical.assistance.tree</field>
-    <field name="model">shifa.medical.assistance</field>
+    <field name="name">shifa.medical.assistance.list</field>
+    <field name="model">shifa.medical_assistance</field>
     <field name="arch" type="xml">
-      <tree>
+      <list>
         <field name="member_id"/>
         <field name="dependent_id"/>
         <field name="claim_type"/>
@@ -11,7 +11,7 @@
         <field name="approved_amount"/>
         <field name="state"/>
         <field name="decision_date"/>
-      </tree>
+      </list>
     </field>
   </record>
 
