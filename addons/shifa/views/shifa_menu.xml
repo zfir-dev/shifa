@@ -3,19 +3,19 @@
   <record id="action_shifa_member_tree" model="ir.actions.act_window">
     <field name="name">Members</field>
     <field name="res_model">shifa.member</field>
-    <field name="view_mode">tree,form,kanban</field>
+    <field name="view_mode">list,form,kanban</field>
   </record>
 
   <record id="action_shifa_dependent_tree" model="ir.actions.act_window">
     <field name="name">Dependents</field>
     <field name="res_model">shifa.dependent</field>
-    <field name="view_mode">tree,form</field>
+    <field name="view_mode">list,form</field>
   </record>
 
   <record id="action_shifa_medical_tree" model="ir.actions.act_window">
     <field name="name">Medical Assistance</field>
-    <field name="res_model">shifa.medical.assistance</field>
-    <field name="view_mode">tree,form</field>
+    <field name="res_model">shifa.medical_assistance</field>
+    <field name="view_mode">list,form</field>
   </record>
 
   <!-- Menu Items -->

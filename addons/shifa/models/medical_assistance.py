@@ -2,7 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 class ShifaMedicalAssistance(models.Model):
-    _name = 'shifa.medical.assistance'
+    _name = 'shifa.medical_assistance'
     _description = 'SHIFA Medical Assistance'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
@@ -54,7 +54,7 @@ class ShifaMedicalAssistance(models.Model):
                 if start:
                     years = (fields.Date.today() - start).days // 365
                     if years < 2:
-                        raise models.ValidationError('Member does not meet the 2-year qualifying period for medical assistance.')
+                        raise ValidationError('Member does not meet the 2-year qualifying period for medical assistance.')
 
             # Check arrears > 90 days via invoices
             today = fields.Date.today()
@@ -68,7 +68,7 @@ class ShifaMedicalAssistance(models.Model):
                 for inv in invoices:
                     due = inv.invoice_date_due or inv.invoice_date
                     if due and (today - due).days > 90:
-                        raise models.ValidationError('Member has arrears exceeding 90 days and is not eligible for medical assistance.')
+                        raise ValidationError('Member has arrears exceeding 90 days and is not eligible for medical assistance.')
 
     def action_approve(self):
         # enforce 50% annual disbursement limit and mark approved amount

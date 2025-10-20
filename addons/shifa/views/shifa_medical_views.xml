@@ -16,8 +16,8 @@
   </record>
 
   <record id="view_shifa_medical_form" model="ir.ui.view">
-    <field name="name">shifa.medical.assistance.form</field>
-    <field name="model">shifa.medical.assistance</field>
+    <field name="name">shifa.medical_assistance.form</field>
+    <field name="model">shifa.medical_assistance</field>
     <field name="arch" type="xml">
       <form string="Medical Assistance">
         <sheet>
