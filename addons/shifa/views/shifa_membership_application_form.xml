@@ -23,7 +23,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                       <label>National ID</label>
-                      <input type="text" name="national_id" class="form-control"/>
+                      <input type="text" name="national_id" required="required" class="form-control"/>
                     </div>
                   </div>
 
