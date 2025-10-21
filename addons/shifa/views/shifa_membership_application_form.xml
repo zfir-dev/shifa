@@ -111,7 +111,46 @@
                   </script>
 
                   <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                    <div class="declaration">
+                      <p>I hereby apply for membership in SHIFA and declare that I have read, understood, and agree to abide by the rules of the Association. I acknowledge the following key provisions:</p>
+
+                      <h3>1. FEES &amp; PAYMENTS</h3>
+                      <ul>
+                        <li>A non-refundable Entrance Fee of Rs 500 and an Annual Subscription of Rs 1000 are payable upon application.</li>
+                        <li>A Supplementary Fee of Rs 500 is payable for each dependant registered (See Verso).</li>
+                        <li>All fees for the year are due on 1st January and must be paid in full by 31st March.</li>
+                        <li>Membership is effective only upon payment of all applicable fees.</li>
+                      </ul>
+
+                      <h3>2. MEDICAL CARE ASSISTANCE</h3>
+                      <ul>
+                        <li>Claims for medical care assistance submitted on behalf of a member or their dependant(s) shall be subject to the eligibility criteria set forth in Article 18 of the Association's Rules.</li>
+                        <li>No medical claims are payable during the first two (2) years of membership, except in exceptional circumstances at the Managing Committee's discretion.</li>
+                        <li>Members who are in arrears with their subscriptions for more than three (3) months are ineligible for any medical assistance.</li>
+                        <li>The Managing Committee's decision on all claims is final and binding.</li>
+                      </ul>
+
+                      <h3>3. DISCIPLINE &amp; TERMINATION</h3>
+                      <ul>
+                        <li>Membership may be terminated for misconduct, subject to a right of appeal to a Special General Meeting.</li>
+                        <li>A member who resigns or is expelled forfeits all rights to the Association's property and any contributions made.</li>
+                        <li>The Managing Committee's decision on membership admission is final and does not require justification.</li>
+                      </ul>
+                    </div>
+
+                    <div class="form-check mt-3">
+                      <input type="checkbox" id="policy_agree" name="policy_agree" required="required" class="form-check-input"/>
+                      <label for="policy_agree" class="form-check-label">I confirm that I have read, understood and agree to the policy above.</label>
+                    </div>
+
+                    <div class="form-check mt-2">
+                      <input type="checkbox" id="communications" name="communications" required="required" class="form-check-input"/>
+                      <label for="communications" class="form-check-label"><strong>I agree to receive communications from the Association on the mobile number provided above</strong></label>
+                    </div>
+
+                    <div class="mt-3">
+                      <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </div>
                   </div>
                 </form>
               </div>
