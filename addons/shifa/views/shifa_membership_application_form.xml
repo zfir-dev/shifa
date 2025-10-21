@@ -55,6 +55,19 @@
                   </div>
 
                   <h4 class="mt-4">Dependents (optional)</h4>
+                  <div class="mb-3">
+                    <p><strong>List all persons you wish to register as your dependants</strong></p>
+                    <p><strong>Category (Eligible Dependants) are limited to:</strong></p>
+                    <ol>
+                      <li>Your lawful spouse.</li>
+                      <li>Your unemployed children up to age 18.</li>
+                      <li>Your unmarried &amp; unemployed children up to age 23 if in full-time education/vocational training.</li>
+                      <li>A care-dependent relative (e.g., parent, sibling, grandchild) who is permanently resident with you, medically certified as incapacitated, and wholly financially dependent on you.</li>
+                      <li>A child or spouse of any age with a total and permanent disability.</li>
+                      <li>Orphan</li>
+                    </ol>
+                    <p>Supporting documents (e.g., birth certificate, marriage certificate, student ID, medical certificate) must be submitted with this form upon request by the Secretary.</p>
+                  </div>
                   <div id="dependents-container"></div>
                   <button type="button" class="btn btn-outline-primary mt-2" id="add-dependent-btn">
                     <i class="fa fa-plus"></i> Add Dependent
