@@ -43,4 +43,4 @@ class ShifaMembershipController(http.Controller):
                 'auto_promote': True if post.get(f'dep_auto_{i}') == 'on' else False,
             })
 
-        return request.render('shifa.membership_success', {'member': member})
+        return request.render('shifa.membership_application_form_success', {'member': member})

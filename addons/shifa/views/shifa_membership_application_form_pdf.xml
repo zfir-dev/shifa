@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <template id="report_membership_application_form_pdf_template">
+      <t t-name="shifa.report_membership_application_form_pdf">
+        <t t-call="web.external_layout">
+          <div class="page">
+
+            <h2 class="text-center mb-2">SHIFA Membership Application Form</h2>
+
+            <h3>1. Member Details</h3>
+            <table class="table table-sm">
+              <tr><td><strong>Name</strong></td><td><t t-esc="doc.name"/></td></tr>
+              <tr><td><strong>National ID</strong></td><td><t t-esc="doc.national_id"/></td></tr>
+              <tr><td><strong>Date of Birth</strong></td><td><t t-esc="doc.dob"/></td></tr>
+              <tr><td><strong>Email</strong></td><td><t t-esc="doc.email"/></td></tr>
+              <tr><td><strong>Phone</strong></td><td><t t-esc="doc.phone"/></td></tr>
+              <tr><td><strong>Address</strong></td><td><t t-esc="doc.address"/></td></tr>
+              <tr><td><strong>Donation</strong></td><td><t t-esc="doc.donation_amount"/></td></tr>
+            </table>
+
+            <h3>2. Dependants</h3>
+            <t t-if="doc.dependant_ids">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Relationship</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="doc.dependant_ids" t-as="d">
+                    <td><t t-esc="d.name"/></td>
+                    <td><t t-esc="d.dob"/></td>
+                    <td><t t-esc="dict(d._fields['relationship'].selection).get(d.relationship)"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </t>
+            <t t-if="not doc.dependant_ids">
+              <p><em>No dependants declared</em></p>
+            </t>
+
+            <h3>3. Signatures</h3>
+            <p>Applicant Signature: ________________________</p>
+            <p>Date: ______________________________________</p>
+
+            <h3>4. Office Use Only</h3>
+            <p>Member ID: ________________________________</p>
+            <p>Approved By: _____________________________</p>
+            <p>Date of Approval: _________________________</p>
+
+          </div>
+        </t>
+      </t>
+    </template>
+  </data>
+</odoo>

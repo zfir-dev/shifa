@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="membership_application_form_success" model="ir.ui.view">
+      <field name="name">Membership Success</field>
+      <field name="type">qweb</field>
+      <field name="key">shifa.membership_application_form_success</field>
+      <field name="arch" type="xml">
+        <t t-name="shifa.membership_application_form_success">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <div class="container text-center mt-5 mb-5">
+                <div style="background:#2b9edb;color:white;padding:14px;border-radius:6px;text-align:left;margin-bottom:18px;">
+                  <strong style="font-size:18px;">APPLICATION COMPLETE</strong>
+                </div>
+
+                <h3>Thank you for completing your membership application!</h3>
+                <p class="lead">Your application has been successfully submitted. Please follow these next steps:</p>
+
+                <div class="alert alert-success mt-4 text-start">
+                  <ol>
+                    <li>Print or download the PDF version of your application</li>
+                    <li>Sign the application form in the designated areas</li>
+                    <li>Submit the signed form to the SHIFA office</li>
+                    <li>You will receive a member ID once your application is processed</li>
+                  </ol>
+                </div>
+
+                <div style="display:flex;justify-content:center;gap:14px;margin-top:18px;">
+                  <a t-att-href="'/report/pdf/shifa.report_membership_application_form_pdf/%s' % member_id"
+                     class="btn btn-success">Download PDF</a>
+
+                  <a t-att-href="'/report/html/shifa.report_membership_application_form_pdf/%s' % member_id"
+                     target="_blank"
+                     class="btn btn-primary">Print Form</a>
+                </div>
+
+                <div style="margin-top:18px;">
+                  <a href="/" class="btn btn-outline-secondary mt-3">Return Home</a>
+                </div>
+              </div>
+            </div>
+          </t>
+        </t>
+      </field>
+    </record>
+  </data>
+</odoo>
