@@ -10,6 +10,9 @@ services:
       - HOST=db
       - USER=odoo
       - PASSWORD=odoo
+      - REPORT_URL=http://127.0.0.1:8069
+      - WEB_BASE_URL_FREEZE=True
+      - REPORT_DISABLE_JAVASCRIPT=True
     volumes:
       - odoo-data:/var/lib/odoo
 

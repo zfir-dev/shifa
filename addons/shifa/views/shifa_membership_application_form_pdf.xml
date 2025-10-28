@@ -88,15 +88,5 @@
                 </main>
             </t>
         </template>
-
-        <!-- Report action -->
-        <record id="action_report_membership_application_pdf" model="ir.actions.report">
-            <field name="name">Membership Application</field>
-            <field name="model">shifa.member</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">shifa.membership_application_pdf_document</field>
-            <field name="report_file">shifa.membership_application_pdf_document</field>
-            <field name="print_report_name">'SHIFA_Application_' + (object.name or 'Member')</field>
-        </record>
     </data>
 </odoo>
