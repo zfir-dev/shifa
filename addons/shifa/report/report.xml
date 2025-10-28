@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
-    <report
-      id="report_membership_application_form_pdf"
-      model="shifa.member"
-      string="Membership Application Form"
-      report_type="qweb-pdf"
-      name="shifa.report_membership_application_form_pdf"
-      file="shifa.report_membership_application_form_pdf"
-      print_report_name="'SHIFA_Application_' + (object.name or 'Member')"
-    />
+    <!-- 1. The report action -->
+    <record id="action_report_membership_application_pdf" model="ir.actions.report">
+        <field name="name">Membership Application</field>
+        <field name="model">shifa.member</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">shifa.membership_application_pdf_document</field>
+        <field name="report_file">shifa.membership_application_pdf_document</field>
+        <field name="print_report_name">'SHIFA_Application_' + (object.name or 'Member')</field>
+    </record>
   </data>
 </odoo>

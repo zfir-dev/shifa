@@ -1,59 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
-    <template id="report_membership_application_form_pdf_template">
-      <t t-name="shifa.report_membership_application_form_pdf">
-        <t t-call="web.external_layout">
-          <div class="page">
+    <data>
+        <template id="membership_application_pdf_document">
+            <t t-call="web.basic_layout">
+                <main>
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page"
+                             style="font-family:Arial,Helvetica,sans-serif;padding:20px;">
 
-            <h2 class="text-center mb-2">SHIFA Membership Application Form</h2>
+                            <h2 style="text-align:center;margin-bottom:20px;">
+                                SHIFA Membership Application Form
+                            </h2>
 
-            <h3>1. Member Details</h3>
-            <table class="table table-sm">
-              <tr><td><strong>Name</strong></td><td><t t-esc="doc.name"/></td></tr>
-              <tr><td><strong>National ID</strong></td><td><t t-esc="doc.national_id"/></td></tr>
-              <tr><td><strong>Date of Birth</strong></td><td><t t-esc="doc.dob"/></td></tr>
-              <tr><td><strong>Email</strong></td><td><t t-esc="doc.email"/></td></tr>
-              <tr><td><strong>Phone</strong></td><td><t t-esc="doc.phone"/></td></tr>
-              <tr><td><strong>Address</strong></td><td><t t-esc="doc.address"/></td></tr>
-              <tr><td><strong>Donation</strong></td><td><t t-esc="doc.donation_amount"/></td></tr>
-            </table>
+                            <h3>1. Member Details</h3>
+                            <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Name</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>National ID</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.national_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Date of Birth</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.date_of_birth"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Email</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.email"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Phone</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.phone"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Address</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.address"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border:1px solid #ddd;"><strong>Donation</strong></td>
+                                    <td style="padding:5px;border:1px solid #ddd;"><t t-esc="doc.donation_amount"/></td>
+                                </tr>
+                            </table>
 
-            <h3>2. Dependants</h3>
-            <t t-if="doc.dependant_ids">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>DOB</th>
-                    <th>Relationship</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr t-foreach="doc.dependant_ids" t-as="d">
-                    <td><t t-esc="d.name"/></td>
-                    <td><t t-esc="d.dob"/></td>
-                    <td><t t-esc="dict(d._fields['relationship'].selection).get(d.relationship)"/></td>
-                  </tr>
-                </tbody>
-              </table>
+                            <h3>2. Dependents</h3>
+                            <t t-if="doc.dependent_ids">
+                                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding:8px;border:1px solid #ddd;background:#f5f5f5;">Name</th>
+                                            <th style="padding:8px;border:1px solid #ddd;background:#f5f5f5;">Date of Birth</th>
+                                            <th style="padding:8px;border:1px solid #ddd;background:#f5f5f5;">Relationship</th>
+                                            <th style="padding:8px;border:1px solid #ddd;background:#f5f5f5;">Care Dependent</th>
+                                            <th style="padding:8px;border:1px solid #ddd;background:#f5f5f5;">Orphan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.dependent_ids" t-as="d">
+                                            <td style="padding:5px;border:1px solid #ddd;"><t t-esc="d.name"/></td>
+                                            <td style="padding:5px;border:1px solid #ddd;"><t t-esc="d.date_of_birth"/></td>
+                                            <td style="padding:5px;border:1px solid #ddd;"><t t-esc="d.relation"/></td>
+                                            <td style="padding:5px;border:1px solid #ddd;">
+                                                <t t-esc="'Yes' if d.is_care_dependent else 'No'"/>
+                                            </td>
+                                            <td style="padding:5px;border:1px solid #ddd;">
+                                                <t t-esc="'Yes' if d.is_orphan else 'No'"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <t t-if="not doc.dependent_ids">
+                                <p><em>No dependents declared</em></p>
+                            </t>
+
+                            <h3>3. Signatures</h3>
+                            <p>Applicant Signature: ________________________</p>
+                            <p>Date: ______________________________________</p>
+
+                            <h3>4. Office Use Only</h3>
+                            <p>Member ID: ________________________________</p>
+                            <p>Approved By: _____________________________</p>
+                            <p>Date of Approval: _________________________</p>
+                        </div>
+                    </t>
+                </main>
             </t>
-            <t t-if="not doc.dependant_ids">
-              <p><em>No dependants declared</em></p>
-            </t>
+        </template>
 
-            <h3>3. Signatures</h3>
-            <p>Applicant Signature: ________________________</p>
-            <p>Date: ______________________________________</p>
-
-            <h3>4. Office Use Only</h3>
-            <p>Member ID: ________________________________</p>
-            <p>Approved By: _____________________________</p>
-            <p>Date of Approval: _________________________</p>
-
-          </div>
-        </t>
-      </t>
-    </template>
-  </data>
+        <!-- Report action -->
+        <record id="action_report_membership_application_pdf" model="ir.actions.report">
+            <field name="name">Membership Application</field>
+            <field name="model">shifa.member</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">shifa.membership_application_pdf_document</field>
+            <field name="report_file">shifa.membership_application_pdf_document</field>
+            <field name="print_report_name">'SHIFA_Application_' + (object.name or 'Member')</field>
+        </record>
+    </data>
 </odoo>

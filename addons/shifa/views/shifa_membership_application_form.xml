@@ -173,6 +173,49 @@
       </field>
     </record>
 
+    <!-- Success page -->
+    <record id="membership_application_form_success" model="ir.ui.view">
+      <field name="name">Membership Success</field>
+      <field name="type">qweb</field>
+      <field name="key">shifa.membership_application_form_success</field>
+      <field name="arch" type="xml">
+        <t t-name="shifa.membership_application_form_success">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <div class="container text-center mt-5 mb-5">
+                <div style="background:#2b9edb;color:white;padding:14px;border-radius:6px;text-align:left;margin-bottom:18px;">
+                  <strong style="font-size:18px;">APPLICATION COMPLETE</strong>
+                </div>
+
+                <h3>Thank you for completing your membership application!</h3>
+                <p class="lead">Your application has been successfully submitted. Please follow these next steps:</p>
+
+                <div class="alert alert-success mt-4 text-start">
+                  <ol>
+                    <li>Print or download the PDF version of your application</li>
+                    <li>Sign the application form in the designated areas</li>
+                    <li>Submit the signed form to the SHIFA office</li>
+                    <li>You will receive a member ID once your application is processed</li>
+                  </ol>
+                  <p class="mt-2">You can use your member ID to log in later and upload signed documents or check your application status.</p>
+                </div>
+
+                <div style="display:flex;justify-content:center;gap:14px;margin-top:18px;">
+                  <button type="button" class="btn btn-primary" onclick="window.print()">Print This Page</button>
+                  <a t-att-href="'/report/pdf/shifa.action_report_membership_application_pdf/%s' % member.id" 
+                     class="btn btn-success">Download PDF</a>
+                </div>
+
+                <div style="margin-top:18px;">
+                  <a href="/" class="btn btn-outline-secondary mt-3">Return Home</a>
+                </div>
+              </div>
+            </div>
+          </t>
+        </t>
+      </field>
+    </record>
+
     <!-- Website Menu -->
     <record id="menu_membership_form" model="website.menu">
       <field name="name">Join SHIFA</field>
