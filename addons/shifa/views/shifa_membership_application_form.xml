@@ -173,20 +173,23 @@
       </field>
     </record>
 
-    <record id="membership_success" model="ir.ui.view">
+    <!-- Success page -->
+    <record id="membership_application_form_success" model="ir.ui.view">
       <field name="name">Membership Success</field>
       <field name="type">qweb</field>
-      <field name="key">shifa.membership_success</field>
+      <field name="key">shifa.membership_application_form_success</field>
       <field name="arch" type="xml">
-        <t t-name="shifa.membership_success">
+        <t t-name="shifa.membership_application_form_success">
           <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-              <div class="container text-center mt-5 mb-5" id="membership-success-container">
+              <div class="container text-center mt-5 mb-5">
                 <div style="background:#2b9edb;color:white;padding:14px;border-radius:6px;text-align:left;margin-bottom:18px;">
                   <strong style="font-size:18px;">APPLICATION COMPLETE</strong>
                 </div>
+
                 <h3>Thank you for completing your membership application!</h3>
                 <p class="lead">Your application has been successfully submitted. Please follow these next steps:</p>
+
                 <div class="alert alert-success mt-4 text-start">
                   <ol>
                     <li>Print or download the PDF version of your application</li>
@@ -198,24 +201,26 @@
                 </div>
 
                 <div style="display:flex;justify-content:center;gap:14px;margin-top:18px;">
-                  <button type="button" class="btn btn-primary" id="printForm">Print Form</button>
-                  <button type="button" class="btn btn-success" id="downloadPDF">Download PDF</button>
+                  <button type="button" class="btn btn-success" onclick="printReport()">Print Membership Form</button>
+                  <a t-att-href="'/shifa/membership/pdf/%s' % member.id" class="btn btn-success">Download Membership Form</a>
                 </div>
+
+                <script>
+                  function printReport() {
+                    var reportWindow = window.open('/report/html/shifa.action_report_membership_application_pdf/<t t-esc="member.id"/>', '_blank');
+                    
+                    reportWindow.onload = function() {
+                      setTimeout(function() {
+                        reportWindow.print();
+                      }, 1000);
+                    };
+                  }
+                </script>
 
                 <div style="margin-top:18px;">
                   <a href="/" class="btn btn-outline-secondary mt-3">Return Home</a>
                 </div>
               </div>
-              <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-              <script>
-                (function(){
-                  var printBtn = document.getElementById('printForm');
-                  var pdfBtn = document.getElementById('downloadPDF');
-                  var container = document.getElementById('membership-success-container');
-                  if(printBtn){ printBtn.addEventListener('click', function(){ window.print(); }); }
-                  if(pdfBtn &amp;&amp; container){ pdfBtn.addEventListener('click', function(){ var opt={ margin:10, filename:'SHIFA_Application.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} }; html2pdf().set(opt).from(container).save(); }); }
-                })();
-              </script>
             </div>
           </t>
         </t>

@@ -5,3 +5,4 @@ services:
       - ./addons:/mnt/extra-addons:delegated
     environment:
       - DEV=1
+    command: ["odoo", "-u", "shifa"]

@@ -410,3 +410,11 @@ class ShifaMember(models.Model):
         if members_to_suspend:
             members_to_suspend.write({'status': 'suspended'})
             self._notify_committee_arrears(members_to_suspend)
+
+    def action_download_membership_pdf(self):
+        """Download membership application PDF"""
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/report/pdf/shifa.action_report_membership_application_pdf/{self.id}',
+            'target': 'new',
+        }
