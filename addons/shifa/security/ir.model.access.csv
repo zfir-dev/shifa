@@ -2,3 +2,10 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_shifa_member,SHIFA Member,model_shifa_member,base.group_user,1,1,1,1
 access_shifa_dependent,SHIFA Dependent,model_shifa_dependent,base.group_user,1,1,1,1
 access_shifa_medical,SHIFA Medical,model_shifa_medical_assistance,base.group_user,1,1,1,1
+access_shifa_member_website,SHIFA Member Website,model_shifa_member,group_website_member,1,0,0,0
+access_shifa_dependent_website,SHIFA Dependent Website,model_shifa_dependent,group_website_member,1,0,0,0
+access_shifa_medical_website,SHIFA Medical Website,model_shifa_medical_assistance,group_website_member,1,0,0,0
+access_account_move_website,Account Move Website,account.model_account_move,group_website_member,1,0,0,0
+access_account_move_line_website,Account Move Line Website,account.model_account_move_line,group_website_member,1,0,0,0
+access_res_users_website,Users Website,base.model_res_users,group_website_member,1,0,0,0
+access_res_partner_website,Partner Website,base.model_res_partner,group_website_member,1,0,0,0
