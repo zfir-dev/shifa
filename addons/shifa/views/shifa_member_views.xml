@@ -86,6 +86,7 @@
             <group>
               <field name="name"/>
               <field name="partner_id" readonly="1"/>
+              <field name="user_id" readonly="1"/>
               <field name="national_id"/>
               <field name="date_of_birth"/>
               <field name="email"/>

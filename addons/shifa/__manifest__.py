@@ -13,6 +13,7 @@
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
+        'security/record_rules.xml',
         'data/payment_journals.xml',
         'report/report.xml',
         'views/shifa_menu.xml',

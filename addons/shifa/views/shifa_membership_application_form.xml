@@ -197,12 +197,34 @@
                     <li>Submit the signed form to the SHIFA office</li>
                     <li>You will receive a member ID once your application is processed</li>
                   </ol>
-                  <p class="mt-2">You can use your member ID to log in later and upload signed documents or check your application status.</p>
+                  <p class="mt-2"><strong>Website Account Created:</strong> A website account has been created for you. Use the credentials below to log in and check your membership status and profile.</p>
                 </div>
+
+                <t t-if="user_password">
+                  <div class="alert alert-info mt-4 text-start">
+                    <h5><i class="fa fa-key"></i> Your Login Credentials</h5>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p><strong>Username:</strong> <code t-esc="member.national_id"/></p>
+                      </div>
+                      <div class="col-md-6">
+                        <p><strong>Password:</strong> <code t-esc="user_password"/></p>
+                      </div>
+                    </div>
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="fa fa-info-circle"></i> Please save these credentials securely. You can log in at the top right of this website.
+                      </small>
+                    </div>
+                  </div>
+                </t>
 
                 <div style="display:flex;justify-content:center;gap:14px;margin-top:18px;">
                   <button type="button" class="btn btn-success" onclick="printReport()">Print Membership Form</button>
                   <a t-att-href="'/shifa/membership/pdf/%s' % member.id" class="btn btn-success">Download Membership Form</a>
+                  <t t-if="user_password">
+                    <a href="/web/login" class="btn btn-primary">Login to My Profile</a>
+                  </t>
                 </div>
 
                 <script>
@@ -227,12 +249,206 @@
       </field>
     </record>
 
+    <!-- Member Portal Profile View -->
+    <record id="member_profile_template" model="ir.ui.view">
+      <field name="name">SHIFA Member Profile</field>
+      <field name="type">qweb</field>
+      <field name="key">shifa.member_profile_template</field>
+      <field name="arch" type="xml">
+        <t t-name="shifa.member_profile_template">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <div class="container mt-5 mb-5">
+                <div class="row">
+                  <div class="col-md-8">
+                    <h2>My SHIFA Membership Profile</h2>
+                    
+                    <!-- Member Details -->
+                    <div class="card mb-4">
+                      <div class="card-header">
+                        <h4 class="mb-0">Personal Information</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p><strong>Name:</strong> <t t-esc="member.name"/></p>
+                            <p><strong>National ID:</strong> <t t-esc="member.national_id"/></p>
+                            <p><strong>Date of Birth:</strong> <t t-esc="member.date_of_birth"/></p>
+                            <p><strong>Phone:</strong> <t t-esc="member.phone"/></p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><strong>Email:</strong> <t t-esc="member.email"/></p>
+                            <p><strong>Address:</strong> <t t-esc="member.address"/></p>
+                            <p><strong>Member Since:</strong> <t t-esc="member.admission_date"/></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Membership Status -->
+                    <div class="card mb-4">
+                      <div class="card-header">
+                        <h4 class="mb-0">Membership Status</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <p><strong>Status:</strong> 
+                              <span t-att-class="'badge ' + ('badge-success' if member.status == 'active' else 'badge-warning' if member.status == 'draft' else 'badge-danger')">
+                                <t t-esc="member.status.title()"/>
+                              </span>
+                            </p>
+                          </div>
+                          <div class="col-md-4">
+                            <p><strong>Payment Status:</strong>
+                              <span t-att-class="'badge ' + ('badge-success' if member.payment_state == 'paid' else 'badge-warning' if member.payment_state == 'pending' else 'badge-danger')">
+                                <t t-esc="member.payment_state.title()"/>
+                              </span>
+                            </p>
+                          </div>
+                          <div class="col-md-4">
+                            <p><strong>Total Fee:</strong> Rs <t t-esc="member.total_fee"/></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Dependents -->
+                    <div class="card mb-4">
+                      <div class="card-header">
+                        <h4 class="mb-0">Dependents (<t t-esc="len(member.dependent_ids)"/>)</h4>
+                      </div>
+                      <div class="card-body">
+                        <t t-if="member.dependent_ids">
+                          <div class="table-responsive">
+                            <table class="table table-striped">
+                              <thead>
+                                <tr>
+                                  <th>Name</th>
+                                  <th>Relationship</th>
+                                  <th>Date of Birth</th>
+                                  <th>Age Group</th>
+                                  <th>Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr t-foreach="member.dependent_ids" t-as="dependent">
+                                  <td><t t-esc="dependent.name"/></td>
+                                  <td><t t-esc="dependent.relation.title()"/></td>
+                                  <td><t t-esc="dependent.date_of_birth"/></td>
+                                  <td><t t-esc="dependent.age_group"/></td>
+                                  <td>
+                                    <span t-att-class="'badge ' + ('badge-success' if dependent.subscription_state == 'active' else 'badge-secondary')">
+                                      <t t-esc="dependent.subscription_state.title()"/>
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </t>
+                        <t t-if="not member.dependent_ids">
+                          <p class="text-muted">No dependents registered.</p>
+                        </t>
+                      </div>
+                    </div>
+
+                    <!-- Recent Invoices -->
+                    <div class="card mb-4">
+                      <div class="card-header">
+                        <h4 class="mb-0">Recent Invoices</h4>
+                      </div>
+                      <div class="card-body">
+                        <t t-if="invoices">
+                          <div class="table-responsive">
+                            <table class="table table-striped">
+                              <thead>
+                                <tr>
+                                  <th>Invoice #</th>
+                                  <th>Date</th>
+                                  <th>Due Date</th>
+                                  <th>Amount</th>
+                                  <th>Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr t-foreach="invoices" t-as="invoice">
+                                  <td><t t-esc="invoice.name"/></td>
+                                  <td><t t-esc="invoice.invoice_date"/></td>
+                                  <td><t t-esc="invoice.invoice_date_due"/></td>
+                                  <td>Rs <t t-esc="invoice.amount_total"/></td>
+                                  <td>
+                                    <span t-att-class="'badge ' + ('badge-success' if invoice.payment_state == 'paid' else 'badge-warning' if invoice.payment_state == 'partial' else 'badge-danger')">
+                                      <t t-esc="invoice.payment_state.title()"/>
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </t>
+                        <t t-if="not invoices">
+                          <p class="text-muted">No invoices found.</p>
+                        </t>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Sidebar -->
+                  <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-header">
+                        <h5 class="mb-0">Quick Actions</h5>
+                      </div>
+                      <div class="card-body">
+                        <a t-att-href="'/shifa/membership/pdf/%s' % member.id" class="btn btn-primary btn-block mb-2">
+                          <i class="fa fa-download"></i> Download Membership Form
+                        </a>
+                        <t t-if="member.status == 'draft'">
+                          <div class="alert alert-info">
+                            <strong>Pending Approval:</strong> Your application is being reviewed by the SHIFA committee.
+                          </div>
+                        </t>
+                        <t t-if="member.payment_state == 'arrears'">
+                          <div class="alert alert-warning">
+                            <strong>Payment Due:</strong> Please settle your outstanding dues to maintain membership benefits.
+                          </div>
+                        </t>
+                      </div>
+                    </div>
+
+                    <div class="card mt-3">
+                      <div class="card-header">
+                        <h5 class="mb-0">Contact Information</h5>
+                      </div>
+                      <div class="card-body">
+                        <p><strong>SHIFA Office</strong></p>
+                        <p>For membership queries and payments</p>
+                        <p>Please contact the SHIFA Secretary</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </t>
+        </t>
+      </field>
+    </record>
+
     <!-- Website Menu -->
     <record id="menu_membership_form" model="website.menu">
       <field name="name">Join SHIFA</field>
       <field name="url">/shifa/membership</field>
       <field name="parent_id" ref="website.main_menu"/>
       <field name="sequence" type="int">50</field>
+    </record>
+    
+    <record id="menu_member_profile" model="website.menu">
+      <field name="name">My Profile</field>
+      <field name="url">/shifa/profile</field>
+      <field name="parent_id" ref="website.main_menu"/>
+      <field name="sequence" type="int">60</field>
     </record>
   </data>
 </odoo>

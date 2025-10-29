@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <!-- Record rule to ensure website members can only see their own records -->
+    <record id="rule_member_own_records" model="ir.rule">
+      <field name="name">SHIFA Members: Own Records Only</field>
+      <field name="model_id" ref="model_shifa_member"/>
+      <field name="domain_force">[('user_id', '=', user.id)]</field>
+      <field name="groups" eval="[(4, ref('group_website_member'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+      <field name="perm_create" eval="False"/>
+      <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Record rule for dependents - only see dependents of their own member record -->
+    <record id="rule_dependent_own_records" model="ir.rule">
+      <field name="name">SHIFA Dependents: Own Member's Records Only</field>
+      <field name="model_id" ref="model_shifa_dependent"/>
+      <field name="domain_force">[('member_id.user_id', '=', user.id)]</field>
+      <field name="groups" eval="[(4, ref('group_website_member'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+      <field name="perm_create" eval="False"/>
+      <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Record rule for medical assistance - only see their own medical claims -->
+    <record id="rule_medical_own_records" model="ir.rule">
+      <field name="name">SHIFA Medical: Own Records Only</field>
+      <field name="model_id" ref="model_shifa_medical_assistance"/>
+      <field name="domain_force">[('member_id.user_id', '=', user.id)]</field>
+      <field name="groups" eval="[(4, ref('group_website_member'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+      <field name="perm_create" eval="False"/>
+      <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Record rule for invoices - only see their own invoices -->
+    <record id="rule_invoice_own_records" model="ir.rule">
+      <field name="name">SHIFA Invoices: Own Records Only</field>
+      <field name="model_id" ref="account.model_account_move"/>
+      <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+      <field name="groups" eval="[(4, ref('group_website_member'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+      <field name="perm_create" eval="False"/>
+      <field name="perm_unlink" eval="False"/>
+    </record>
+  </data>
+</odoo>
