@@ -201,37 +201,25 @@
                 </div>
 
                 <div style="display:flex;justify-content:center;gap:14px;margin-top:18px;">
-                  <button type="button" class="btn btn-primary" onclick="window.print()">Print This Page</button>
-                  <a t-att-href="'/shifa/membership/pdf/%s' % member.id" 
-                     class="btn btn-success">Download PDF</a>
+                  <button type="button" class="btn btn-success" onclick="printReport()">Print Membership Form</button>
+                  <a t-att-href="'/shifa/membership/pdf/%s' % member.id" class="btn btn-success">Download Membership Form</a>
                 </div>
+
+                <script>
+                  function printReport() {
+                    var reportWindow = window.open('/report/html/shifa.action_report_membership_application_pdf/<t t-esc="member.id"/>', '_blank');
+                    
+                    reportWindow.onload = function() {
+                      setTimeout(function() {
+                        reportWindow.print();
+                      }, 1000);
+                    };
+                  }
+                </script>
 
                 <div style="margin-top:18px;">
                   <a href="/" class="btn btn-outline-secondary mt-3">Return Home</a>
                 </div>
-              </div>
-            </div>
-          </t>
-        </t>
-      </field>
-    </record>
-
-    <!-- PDF Error page -->
-    <record id="membership_pdf_error" model="ir.ui.view">
-      <field name="name">PDF Generation Error</field>
-      <field name="type">qweb</field>
-      <field name="key">shifa.membership_pdf_error</field>
-      <field name="arch" type="xml">
-        <t t-name="shifa.membership_pdf_error">
-          <t t-call="website.layout">
-            <div id="wrap" class="oe_structure oe_empty">
-              <div class="container text-center mt-5 mb-5">
-                <div class="alert alert-danger">
-                  <h3>PDF Generation Error</h3>
-                  <p>We encountered an issue generating your PDF. Please try again later or contact support.</p>
-                  <p class="small">Error details: <t t-esc="error"/></p>
-                </div>
-                <a href="/" class="btn btn-primary">Return Home</a>
               </div>
             </div>
           </t>

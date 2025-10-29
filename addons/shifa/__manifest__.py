@@ -24,6 +24,7 @@
         'views/account_payment_register_views.xml',
         'data/email_templates.xml',
         'data/cron_jobs.xml',
+        'data/report_url_param.xml',
     ],
     'application': True,
     'installable': True,

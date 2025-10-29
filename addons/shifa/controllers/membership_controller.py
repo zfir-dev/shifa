@@ -48,40 +48,20 @@ class ShifaMembershipController(http.Controller):
 
     @http.route(['/shifa/membership/pdf/<int:member_id>'], type='http', auth='public', website=True)
     def membership_pdf_download(self, member_id, **kw):
-        """Generate PDF with JavaScript disabled to prevent hanging"""
-        try:
-            # Get the member record
-            member = request.env['shifa.member'].sudo().browse(member_id)
-            if not member.exists():
-                return request.not_found()
-            
-            # Generate PDF using the template directly with sudo permissions
-            report_sudo = request.env['ir.actions.report'].sudo()
-            pdf_content, _ = report_sudo.with_context(disable_javascript=True)._render_qweb_pdf(
-                'shifa.membership_application_pdf_document',
-                [member_id]
-            )
-            
-            # Return PDF response
-            filename = f'SHIFA_Application_{member.name or "Member"}.pdf'
-            response = request.make_response(
-                pdf_content,
-                headers=[
-                    ('Content-Type', 'application/pdf'),
-                    ('Content-Disposition', f'attachment; filename="{filename}"')
-                ]
-            )
-            return response
-            
-        except Exception as e:
-            # Log the error and return a user-friendly message
-            request.env['ir.logging'].sudo().create({
-                'name': 'PDF Generation Error',
-                'type': 'server',
-                'level': 'ERROR',
-                'message': f'Error generating PDF for member {member_id}: {str(e)}',
-                'path': 'shifa.membership_controller',
-                'line': '0',
-                'func': 'membership_pdf_download'
-            })
-            return request.render('shifa.membership_pdf_error', {'error': str(e)})
+        # Fetch the report action (as a string ref)
+        report_ref = 'shifa.action_report_membership_application_pdf'
+
+        # Get the report object
+        report = request.env.ref(report_ref).sudo()
+
+        # Proper call: pass the report_ref and res_ids explicitly
+        pdf_content, _ = report.with_context(disable_javascript=True)._render_qweb_pdf(
+            report_ref, res_ids=[member_id]
+        )
+
+        pdf_name = f"membership_{member_id}.pdf"
+        headers = [
+            ('Content-Type', 'application/pdf'),
+            ('Content-Disposition', f'inline; filename={pdf_name}')
+        ]
+        return request.make_response(pdf_content, headers)
