@@ -75,6 +75,12 @@
             <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
               <field name="invoice_count" widget="statinfo" string="Invoices"/>
             </button>
+            <button name="action_download_membership_pdf" type="object" class="oe_stat_button" icon="fa-download">
+              <div class="o_field_widget o_stat_info">
+                <span class="o_stat_text">Download</span>
+                <span class="o_stat_text">Membership PDF</span>
+              </div>
+            </button>
           </div>
           <group>
             <group>
