@@ -285,9 +285,14 @@ class ShifaMember(models.Model):
             if rec.donation_amount:
                 line_vals.append((0, 0, {'name': 'Donation', 'quantity': 1, 'price_unit': rec.donation_amount}))
 
-            # Set due date for annual subscription to March 31 of current year (to align with arrears policy)
+            # Set due date for annual subscription to March 31 (to align with arrears policy)
+            # If created after March 31, due date is next year's March 31
             today = fields.Date.today()
-            due_date = fields.Date.to_string(fields.Date.from_string(f"{today.year}-03-31"))
+            year = today.year
+            march_31 = fields.Date.from_string(f"{year}-03-31")
+            if today > march_31:
+                year += 1
+            due_date = fields.Date.to_string(fields.Date.from_string(f"{year}-03-31"))
             inv = self.env['account.move'].create({
                 'move_type': 'out_invoice',
                 'partner_id': rec.partner_id.id,
