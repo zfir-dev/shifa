@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data noupdate="1">
+  <data>
     <!-- Juice Mobile Money Account -->
     <record id="account_juice_mobile_money" model="account.account">
       <field name="name">Juice</field>
       <field name="code">102500</field>
-      <field name="account_type">asset_current</field>
+      <field name="account_type">asset_cash</field>
       <field name="reconcile" eval="True"/>
+    </record>
+
+    <!-- Outstanding Receipts -->
+    <record id="account_juice_outstanding_receipts" model="account.account">
+        <field name="name">Juice Outstanding Receipts</field>
+        <field name="code">102501</field>
+        <field name="account_type">asset_current</field>
+        <field name="reconcile" eval="True"/>
+    </record>
+
+    <!-- Outstanding Payments -->
+    <record id="account_juice_outstanding_payments" model="account.account">
+        <field name="name">Juice Outstanding Payments</field>
+        <field name="code">102502</field>
+        <field name="account_type">asset_current</field>
+        <field name="reconcile" eval="True"/>
     </record>
 
     <!-- Juice Payment Journal -->
@@ -17,6 +33,8 @@
       <field name="default_account_id" ref="account_juice_mobile_money"/>
       <field name="sequence">10</field>
       <field name="active" eval="True"/>
+      <!-- Link outstanding accounts (field names may vary by Odoo version, assuming standard names) -->
+      <!-- For Odoo 17, it's often handled via inbound/outbound payment methods or default accounts -->
     </record>
 
   </data>
