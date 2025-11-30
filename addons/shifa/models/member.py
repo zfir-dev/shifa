@@ -130,11 +130,13 @@ class ShifaMember(models.Model):
             if rec.partner_id:
                 continue
             # Get default receivable account
+            # Get default receivable account
             receivable_account = self.env.ref('shifa.account_shifa_receivable', raise_if_not_found=False)
-            if not receivable_account or receivable_account.company_id != rec.env.company:
+            # Check if account exists and is available for the current company
+            if not receivable_account:
                 receivable_account = self.env['account.account'].search([
                     ('account_type', '=', 'asset_receivable'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
 
             partner_vals = {
@@ -298,11 +300,11 @@ class ShifaMember(models.Model):
             rec._get_or_create_partner()
             # Get default income account
             account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
-            if not account or account.company_id != rec.env.company:
+            if not account:
                 # Fallback to property or error
                 account = self.env['account.account'].search([
                     ('account_type', '=', 'income'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
             
             if not account:
@@ -347,10 +349,10 @@ class ShifaMember(models.Model):
             
             # Get default income account
             account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
-            if not account or account.company_id != rec.env.company:
+            if not account:
                 account = self.env['account.account'].search([
                     ('account_type', '=', 'income'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
             
             line_vals = [(0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee, 'account_id': account.id if account else False})]
