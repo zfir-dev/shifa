@@ -1,0 +1,151 @@
+<odoo>
+    <!-- Committee Role Views -->
+    <record id="view_shifa_committee_role_tree" model="ir.ui.view">
+        <field name="name">shifa.committee.role.tree</field>
+        <field name="model">shifa.committee.role</field>
+        <field name="arch" type="xml">
+            <list string="Committee Roles">
+                <field name="name"/>
+                <field name="is_executive"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_shifa_committee_role_form" model="ir.ui.view">
+        <field name="name">shifa.committee.role.form</field>
+        <field name="model">shifa.committee.role</field>
+        <field name="arch" type="xml">
+            <form string="Committee Role">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="is_executive"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Committee Member Views -->
+    <record id="view_shifa_committee_member_tree" model="ir.ui.view">
+        <field name="name">shifa.committee.member.tree</field>
+        <field name="model">shifa.committee.member</field>
+        <field name="arch" type="xml">
+            <list string="Committee Members">
+                <field name="member_id"/>
+                <field name="role_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_shifa_committee_member_form" model="ir.ui.view">
+        <field name="name">shifa.committee.member.form</field>
+        <field name="model">shifa.committee.member</field>
+        <field name="arch" type="xml">
+            <form string="Committee Member">
+                <sheet>
+                    <group>
+                        <field name="member_id"/>
+                        <field name="role_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Meeting Views -->
+    <record id="view_shifa_meeting_tree" model="ir.ui.view">
+        <field name="name">shifa.meeting.tree</field>
+        <field name="model">shifa.meeting</field>
+        <field name="arch" type="xml">
+            <list string="Meetings">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="meeting_type"/>
+                <field name="state"/>
+                <field name="attendance_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_shifa_meeting_form" model="ir.ui.view">
+        <field name="name">shifa.meeting.form</field>
+        <field name="model">shifa.meeting</field>
+        <field name="arch" type="xml">
+            <form string="Meeting">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_done" string="Mark as Held" type="object" invisible="state != 'confirmed'" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state not in ('draft', 'confirmed')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="location"/>
+                        </group>
+                        <group>
+                            <field name="meeting_type"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Agenda &amp; Minutes">
+                            <group string="Agenda">
+                                <field name="agenda"/>
+                            </group>
+                            <group string="Minutes">
+                                <field name="minutes"/>
+                            </group>
+                        </page>
+                        <page string="Attendees">
+                            <field name="attendee_ids"/>
+                        </page>
+                        <page string="Polls / Voting">
+                            <field name="poll_ids">
+                                <list editable="bottom">
+                                    <field name="question"/>
+                                    <field name="poll_type"/>
+                                    <field name="yes_count"/>
+                                    <field name="no_count"/>
+                                    <field name="abstain_count"/>
+                                    <field name="state"/>
+                                    <button name="action_close" string="Close Poll" type="object" invisible="state != 'open'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_shifa_committee_member" model="ir.actions.act_window">
+        <field name="name">Committee Members</field>
+        <field name="res_model">shifa.committee.member</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_shifa_meeting" model="ir.actions.act_window">
+        <field name="name">Meetings</field>
+        <field name="res_model">shifa.meeting</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

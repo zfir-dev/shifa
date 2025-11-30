@@ -1,0 +1,41 @@
+<odoo>
+    <!-- Member Analysis -->
+    <record id="action_shifa_member_analysis" model="ir.actions.act_window">
+        <field name="name">Member Analysis</field>
+        <field name="res_model">shifa.member</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_shifa_member_graph" model="ir.ui.view">
+        <field name="name">shifa.member.graph</field>
+        <field name="model">shifa.member</field>
+        <field name="arch" type="xml">
+            <graph string="Members by Status">
+                <field name="status"/>
+                <field name="payment_state"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Medical Assistance Analysis -->
+    <record id="action_shifa_medical_analysis" model="ir.actions.act_window">
+        <field name="name">Medical Assistance Analysis</field>
+        <field name="res_model">shifa.medical_assistance</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_shifa_medical_graph" model="ir.ui.view">
+        <field name="name">shifa.medical.graph</field>
+        <field name="model">shifa.medical_assistance</field>
+        <field name="arch" type="xml">
+            <graph string="Medical Assistance by Type">
+                <field name="claim_type"/>
+                <field name="approved_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>
