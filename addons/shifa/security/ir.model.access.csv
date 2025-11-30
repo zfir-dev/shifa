@@ -2,3 +2,8 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_shifa_member,SHIFA Member,model_shifa_member,base.group_user,1,1,1,1
 access_shifa_dependent,SHIFA Dependent,model_shifa_dependent,base.group_user,1,1,1,1
 access_shifa_medical,SHIFA Medical,model_shifa_medical_assistance,base.group_user,1,1,1,1
+access_shifa_committee_role,SHIFA Committee Role,model_shifa_committee_role,base.group_user,1,1,1,1
+access_shifa_committee_member,SHIFA Committee Member,model_shifa_committee_member,base.group_user,1,1,1,1
+access_shifa_meeting,SHIFA Meeting,model_shifa_meeting,base.group_user,1,1,1,1
+access_shifa_meeting_poll,SHIFA Meeting Poll,model_shifa_meeting_poll,base.group_user,1,1,1,1
+access_shifa_config,SHIFA Config,model_shifa_config,base.group_user,1,1,1,1
