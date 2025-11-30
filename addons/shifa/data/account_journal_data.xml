@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Membership Income Account -->
+        <record id="account_shifa_income" model="account.account">
+            <field name="name">Membership Income</field>
+            <field name="code">400001</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+        </record>
+
+        <!-- Account Receivable -->
+        <record id="account_shifa_receivable" model="account.account">
+            <field name="name">Account Receivable</field>
+            <field name="code">120000</field>
+            <field name="account_type">asset_receivable</field>
+            <field name="reconcile" eval="True"/>
+        </record>
+
+        <!-- Default Customer Invoices Journal -->
+        <record id="journal_shifa_sales" model="account.journal">
+            <field name="name">Customer Invoices</field>
+            <field name="type">sale</field>
+            <field name="code">INV</field>
+            <field name="sequence">5</field>
+            <field name="active" eval="True"/>
+            <!-- Odoo usually handles default accounts automatically if not provided, 
+                 but if chart of accounts is minimal, we might need to be careful. 
+                 For now, let's assume standard chart of accounts or minimal setup handles it. -->
+        </record>
+    </data>
+</odoo>

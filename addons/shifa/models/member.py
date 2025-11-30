@@ -129,11 +129,20 @@ class ShifaMember(models.Model):
         for rec in self:
             if rec.partner_id:
                 continue
+            # Get default receivable account
+            receivable_account = self.env.ref('shifa.account_shifa_receivable', raise_if_not_found=False)
+            if not receivable_account or receivable_account.company_id != rec.env.company:
+                receivable_account = self.env['account.account'].search([
+                    ('account_type', '=', 'asset_receivable'),
+                    ('company_id', '=', rec.env.company.id)
+                ], limit=1)
+
             partner_vals = {
                 'name': rec.name,
                 'email': rec.email or False,
                 'phone': rec.phone or False,
                 'street': rec.address or False,
+                'property_account_receivable_id': receivable_account.id if receivable_account else False,
             }
             rec.partner_id = self.env['res.partner'].create(partner_vals)
 
@@ -209,7 +218,7 @@ class ShifaMember(models.Model):
             'name': 'Invoices',
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('partner_id', '=', self.partner_id.id), ('move_type', '=', 'out_invoice')],
             'context': {'default_partner_id': self.partner_id.id, 'default_move_type': 'out_invoice'},
         }
@@ -235,8 +244,26 @@ class ShifaMember(models.Model):
             if not tmpl:
                 return
             # send using the members model (template expects a member)
+            # send using the members model (template expects a member)
+            # Fetch committee emails from config
+            config = self.env['shifa.config'].sudo().get_settings()
+            email_to = False
+            if config:
+                email_to = config.committee_notification_emails
+            
             for m in members:
-                tmpl.sudo().send_mail(m.id, force_send=False)
+                if email_to:
+                    # If we have specific emails, we might need to override the template's 'email_to'
+                    # or ensure the template uses a context variable.
+                    # For simplicity, let's assume the template sends to the member, 
+                    # but we want to notify the committee ABOUT the member.
+                    # Actually, the requirement is "Notify Treasurer and Secretary OF arrears".
+                    # So we should send TO the committee, not the member (for this specific notification).
+                    # We'll pass email_to in context or values.
+                    tmpl.sudo().with_context(email_to=email_to).send_mail(m.id, force_send=False, email_values={'email_to': email_to})
+                else:
+                    # Fallback to template default
+                    tmpl.sudo().send_mail(m.id, force_send=False)
         except Exception:
             # avoid cron failure if email template missing or error
             _logger = self.env['ir.logging']
@@ -269,9 +296,23 @@ class ShifaMember(models.Model):
         """Entrance + annual + dependent fee lines (and optional donation)."""
         for rec in self:
             rec._get_or_create_partner()
+            # Get default income account
+            account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
+            if not account or account.company_id != rec.env.company:
+                # Fallback to property or error
+                account = self.env['account.account'].search([
+                    ('account_type', '=', 'income'),
+                    ('company_id', '=', rec.env.company.id)
+                ], limit=1)
+            
+            if not account:
+                raise models.ValidationError(_('Please define an income account for SHIFA (Type: Income) in the current company.'))
+
+            # Waive entrance fee if auto-promoted
+            entrance_fee = 0.0 if rec.is_auto_promoted else rec.entry_fee
             line_vals = [
-                (0, 0, {'name': 'Entrance Fee', 'quantity': 1, 'price_unit': rec.entry_fee}),
-                (0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee}),
+                (0, 0, {'name': 'Entrance Fee', 'quantity': 1, 'price_unit': entrance_fee, 'account_id': account.id}),
+                (0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee, 'account_id': account.id}),
             ]
             for d in rec.dependent_ids:
                 # waive fee if orphan secondary (per rules you specified)
@@ -280,10 +321,11 @@ class ShifaMember(models.Model):
                     'name': f'Dependent Fee: {d.name}',
                     'quantity': 1,
                     'price_unit': fee,
+                    'account_id': account.id,
                 }))
 
             if rec.donation_amount:
-                line_vals.append((0, 0, {'name': 'Donation', 'quantity': 1, 'price_unit': rec.donation_amount}))
+                line_vals.append((0, 0, {'name': 'Donation', 'quantity': 1, 'price_unit': rec.donation_amount, 'account_id': account.id}))
 
             # Set due date for annual subscription to March 31 of current year (to align with arrears policy)
             today = fields.Date.today()
@@ -302,10 +344,19 @@ class ShifaMember(models.Model):
            Adds dependent fees; keeps dependents even if unsubscribed but sets fee to 0 for unsubscribed."""
         for rec in self.filtered(lambda r: r.status == 'active'):
             rec._get_or_create_partner()
-            line_vals = [(0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee})]
+            
+            # Get default income account
+            account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
+            if not account or account.company_id != rec.env.company:
+                account = self.env['account.account'].search([
+                    ('account_type', '=', 'income'),
+                    ('company_id', '=', rec.env.company.id)
+                ], limit=1)
+            
+            line_vals = [(0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee, 'account_id': account.id if account else False})]
             for d in rec.dependent_ids:
                 price = 0.0 if d.subscription_state == 'unsubscribed' else (0.0 if d.is_orphan else rec.dependent_fee)
-                line_vals.append((0, 0, {'name': f'Dependent Fee: {d.name}', 'quantity': 1, 'price_unit': price}))
+                line_vals.append((0, 0, {'name': f'Dependent Fee: {d.name}', 'quantity': 1, 'price_unit': price, 'account_id': account.id if account else False}))
             today = fields.Date.today()
             due_date = fields.Date.to_string(fields.Date.from_string(f"{today.year}-03-31"))
             inv = self.env['account.move'].create({
