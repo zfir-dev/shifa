@@ -26,6 +26,12 @@ class ShifaMedicalAssistance(models.Model):
     decision_date = fields.Date()
     remarks = fields.Text()
 
+    disbursed_date = fields.Date()
+    
+    # Fundraising (Article 18.4)
+    is_fundraising_appeal = fields.Boolean(string="Fundraising Appeal")
+    fundraising_notes = fields.Text(string="Fundraising Details")
+
     @api.model
     def create(self, vals):
         rec = super(ShifaMedicalAssistance, self).create(vals)
@@ -96,6 +102,7 @@ class ShifaConfig(models.Model):
 
     medical_fund_amount = fields.Monetary(string='Medical Fund Total', currency_field='currency_id')
     currency_id = fields.Many2one('res.currency', default=lambda s: s.env.company.currency_id)
+    committee_notification_emails = fields.Char(string="Committee Notification Emails", help="Comma-separated emails for Treasurer/Secretary")
 
     @api.model
     def get_settings(self):
