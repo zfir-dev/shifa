@@ -107,3 +107,25 @@ class ShifaConfig(models.Model):
     @api.model
     def get_settings(self):
         return self.search([], limit=1)
+
+    @api.model
+    def setup_journal_accounts(self):
+        """Configure Juice journal outstanding accounts (called via data XML)."""
+        journal = self.env['account.journal'].search([('code', '=', 'JUC1')], limit=1)
+        if not journal:
+            return
+
+        outstanding_receipts = self.env['account.account'].search([('code', '=', '102501'), ('company_ids', 'in', [journal.company_id.id])], limit=1)
+        outstanding_payments = self.env['account.account'].search([('code', '=', '102502'), ('company_ids', 'in', [journal.company_id.id])], limit=1)
+
+        if outstanding_receipts:
+            # Update Inbound Payment Method Lines (Manual)
+            for line in journal.inbound_payment_method_line_ids:
+                if line.payment_method_id.code == 'manual':
+                    line.write({'payment_account_id': outstanding_receipts.id})
+
+        if outstanding_payments:
+            # Update Outbound Payment Method Lines (Manual)
+            for line in journal.outbound_payment_method_line_ids:
+                if line.payment_method_id.code == 'manual':
+                    line.write({'payment_account_id': outstanding_payments.id})

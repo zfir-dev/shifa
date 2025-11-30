@@ -17,6 +17,7 @@
         'security/record_rules.xml',
         'data/payment_journals.xml',
         'data/account_journal_data.xml',
+        'data/shifa_setup_data.xml',
         'report/report.xml',
         'views/shifa_member_views.xml',
         'views/shifa_dependent_views.xml',
