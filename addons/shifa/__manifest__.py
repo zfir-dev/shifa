@@ -14,6 +14,7 @@
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
+        'security/record_rules.xml',
         'data/payment_journals.xml',
         'data/account_journal_data.xml',
         'report/report.xml',

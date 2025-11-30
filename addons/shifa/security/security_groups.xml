@@ -16,4 +16,11 @@
     <field name="name">SHIFA Committee</field>
     <field name="implied_ids" eval="[(4, ref('group_shifa_secretary')), (4, ref('group_shifa_treasurer')), (4, ref('group_shifa_president'))]"/>
   </record>
+  
+  <!-- Website members group for portal users -->
+  <record id="group_website_member" model="res.groups">
+    <field name="name">SHIFA Website Members</field>
+    <field name="comment">Members who can access their profile on website but not admin panel</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+  </record>
 </odoo>

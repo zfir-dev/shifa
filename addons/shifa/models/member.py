@@ -9,6 +9,7 @@ class ShifaMember(models.Model):
     # Identity
     name = fields.Char(required=True, tracking=True)
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='set null', tracking=True)
+    user_id = fields.Many2one('res.users', string='Website User Account', ondelete='set null', tracking=True)
     national_id = fields.Char(string="National ID")
     date_of_birth = fields.Date()
     address = fields.Text()
@@ -129,11 +130,13 @@ class ShifaMember(models.Model):
             if rec.partner_id:
                 continue
             # Get default receivable account
+            # Get default receivable account
             receivable_account = self.env.ref('shifa.account_shifa_receivable', raise_if_not_found=False)
-            if not receivable_account or receivable_account.company_id != rec.env.company:
+            # Check if account exists and is available for the current company
+            if not receivable_account:
                 receivable_account = self.env['account.account'].search([
                     ('account_type', '=', 'asset_receivable'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
 
             partner_vals = {
@@ -144,6 +147,70 @@ class ShifaMember(models.Model):
                 'property_account_receivable_id': receivable_account.id if receivable_account else False,
             }
             rec.partner_id = self.env['res.partner'].create(partner_vals)
+
+    def _create_website_user(self):
+        """Create a website user account using National ID as username"""
+        import secrets
+        import string
+        
+        generated_passwords = {}
+        
+        for rec in self:
+            if rec.user_id or not rec.national_id:
+                continue
+                
+            # Ensure partner exists first
+            rec._get_or_create_partner()
+            
+            # Check if user with this login already exists
+            existing_user = self.env['res.users'].search([('login', '=', rec.national_id)], limit=1)
+            if existing_user:
+                rec.user_id = existing_user
+                continue
+            
+            # Generate a random password
+            password_length = 8
+            password_chars = string.ascii_letters + string.digits
+            generated_password = ''.join(secrets.choice(password_chars) for _ in range(password_length))
+            
+            # Get the website member group
+            website_member_group = self.env.ref('shifa.group_website_member', raise_if_not_found=False)
+            if not website_member_group:
+                # Create the group if it doesn't exist
+                website_member_group = self.env['res.groups'].sudo().create({
+                    'name': 'SHIFA Website Members',
+                    'comment': 'Members who can access their profile on website but not admin panel',
+                    'category_id': self.env.ref('base.module_category_hidden').id,
+                })
+            
+            # Get portal user group for basic access
+            portal_group = self.env.ref('base.group_portal', raise_if_not_found=False)
+            groups_to_assign = [website_member_group.id]
+            if portal_group:
+                groups_to_assign.append(portal_group.id)
+            
+            # Create user account
+            user_vals = {
+                'name': rec.name,
+                'login': rec.national_id,  # Use National ID as username
+                'password': generated_password,
+                'email': rec.email or False,
+                'partner_id': rec.partner_id.id,
+                'groups_id': [(6, 0, groups_to_assign)],  # Portal + website member groups
+                'active': True,
+            }
+            
+            try:
+                user = self.env['res.users'].sudo().create(user_vals)
+                rec.user_id = user
+                generated_passwords[rec.id] = generated_password
+            except Exception as e:
+                # Log the error but don't fail the member creation
+                import logging
+                _logger = logging.getLogger(__name__)
+                _logger.warning(f"Failed to create user account for member {rec.name}: {str(e)}")
+        
+        return generated_passwords
 
     # --------- Actions ---------
     def action_view_invoices(self):
@@ -233,11 +300,11 @@ class ShifaMember(models.Model):
             rec._get_or_create_partner()
             # Get default income account
             account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
-            if not account or account.company_id != rec.env.company:
+            if not account:
                 # Fallback to property or error
                 account = self.env['account.account'].search([
                     ('account_type', '=', 'income'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
             
             if not account:
@@ -282,10 +349,10 @@ class ShifaMember(models.Model):
             
             # Get default income account
             account = self.env.ref('shifa.account_shifa_income', raise_if_not_found=False)
-            if not account or account.company_id != rec.env.company:
+            if not account:
                 account = self.env['account.account'].search([
                     ('account_type', '=', 'income'),
-                    ('company_id', '=', rec.env.company.id)
+                    ('company_ids', 'in', [rec.env.company.id])
                 ], limit=1)
             
             line_vals = [(0, 0, {'name': 'Annual Subscription', 'quantity': 1, 'price_unit': rec.annual_fee, 'account_id': account.id if account else False})]

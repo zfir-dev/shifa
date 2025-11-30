@@ -21,6 +21,10 @@ class ShifaMembershipController(http.Controller):
             'donation_amount': float(post.get('donation_amount') or 0.0),
             'status': 'draft',  # Pending approval
         })
+        
+        # Create website user account and get generated password
+        generated_passwords = member._create_website_user()
+        user_password = generated_passwords.get(member.id)
 
         # Dependents (dynamic - handle any number)
         # Find all dependent names from post data
@@ -44,7 +48,34 @@ class ShifaMembershipController(http.Controller):
                 'auto_promote': True if post.get(f'dep_auto_{i}') == 'on' else False,
             })
 
-        return request.render('shifa.membership_application_form_success', {'member': member})
+        return request.render('shifa.membership_application_form_success', {
+            'member': member,
+            'user_password': user_password
+        })
+
+    @http.route(['/shifa/profile'], type='http', auth='user', website=True)
+    def member_profile(self, **kw):
+        """Display member profile for logged-in users"""
+        user = request.env.user
+        
+        # Find the member record linked to this user
+        member = request.env['shifa.member'].search([('user_id', '=', user.id)], limit=1)
+        
+        if not member:
+            # If no member record found, redirect to membership form
+            return request.redirect('/shifa/membership')
+        
+        # Get recent invoices for this member
+        invoices = request.env['account.move'].search([
+            ('partner_id', '=', member.partner_id.id),
+            ('move_type', '=', 'out_invoice'),
+            ('state', '=', 'posted')
+        ], order='invoice_date desc', limit=10)
+        
+        return request.render('shifa.member_profile_template', {
+            'member': member,
+            'invoices': invoices
+        })
 
     @http.route(['/shifa/membership/pdf/<int:member_id>'], type='http', auth='public', website=True)
     def membership_pdf_download(self, member_id, **kw):
